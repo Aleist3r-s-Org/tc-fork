@@ -15,30 +15,11 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef AllPackets_h__
-#define AllPackets_h__
-
-#include "BankPackets.h"
-#include "BattlegroundPackets.h"
-#include "CalendarPackets.h"
-#include "CharacterPackets.h"
-#include "ChatPackets.h"
-#include "CombatLogPackets.h"
-#include "CombatPackets.h"
 #include "CustomPackets.h"
-#include "GuildPackets.h"
-#include "LFGPackets.h"
-#include "MailPackets.h"
-#include "MiscPackets.h"
-#include "NPCPackets.h"
-#include "PartyPackets.h"
-#include "PetPackets.h"
-#include "QueryPackets.h"
-#include "QuestPackets.h"
-#include "SpellPackets.h"
-#include "SystemPackets.h"
-#include "TalentPackets.h"
-#include "TotemPackets.h"
-#include "WorldStatePackets.h"
 
-#endif // AllPackets_h__
+WorldPacket const* WorldPackets::Custom::CustomCombatRating::Write()
+{
+    _worldPacket << int8(ratingID);
+    _worldPacket << int32(ratingAmount);
+    return &_worldPacket;
+}

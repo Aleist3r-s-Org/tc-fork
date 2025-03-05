@@ -347,6 +347,7 @@ enum CombatRating
 };
 
 #define MAX_COMBAT_RATING         25
+#define MAX_CUSTOM_RATING         32
 
 enum DamageEffectType : uint8
 {

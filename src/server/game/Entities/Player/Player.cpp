@@ -320,7 +320,7 @@ Player::Player(WorldSession* session): Unit(true)
         m_auraBasePctMod[i] = 1.0f;
     }
 
-    for (uint8 i = 0; i < MAX_COMBAT_RATING; i++)
+    for (uint8 i = 0; i < MAX_CUSTOM_RATING; i++)
         m_baseRatingValue[i] = 0;
 
     m_baseSpellPower = 0;
@@ -5366,7 +5366,17 @@ void Player::UpdateRating(CombatRating cr)
 
     if (amount < 0)
         amount = 0;
-    SetUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + AsUnderlyingType(cr), uint32(amount));
+
+    if (cr < MAX_COMBAT_RATING)
+        SetUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + AsUnderlyingType(cr), uint32(amount));
+    else
+    {
+        int8 rating = cr - MAX_COMBAT_RATING;
+        WorldPacket data(SMSG_UPDATE_CUSTOM_COMBAT_RATING, 1 + 4);
+        data << rating;
+        data << amount;
+        SendDirectMessage(&data);
+    }
 
     bool affectStats = CanModifyStats();
 
@@ -5443,7 +5453,7 @@ void Player::UpdateRating(CombatRating cr)
 
 void Player::UpdateAllRatings()
 {
-    for (uint8 cr = 0; cr < MAX_COMBAT_RATING; ++cr)
+    for (uint8 cr = 0; cr < MAX_CUSTOM_RATING; ++cr)
         UpdateRating(CombatRating(cr));
 }
 

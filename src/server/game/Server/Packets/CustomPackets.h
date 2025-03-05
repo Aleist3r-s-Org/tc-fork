@@ -15,30 +15,26 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef AllPackets_h__
-#define AllPackets_h__
+#ifndef CustomPackets_h__
+#define CustomPackets_h__
 
-#include "BankPackets.h"
-#include "BattlegroundPackets.h"
-#include "CalendarPackets.h"
-#include "CharacterPackets.h"
-#include "ChatPackets.h"
-#include "CombatLogPackets.h"
-#include "CombatPackets.h"
-#include "CustomPackets.h"
-#include "GuildPackets.h"
-#include "LFGPackets.h"
-#include "MailPackets.h"
-#include "MiscPackets.h"
-#include "NPCPackets.h"
-#include "PartyPackets.h"
-#include "PetPackets.h"
-#include "QueryPackets.h"
-#include "QuestPackets.h"
-#include "SpellPackets.h"
-#include "SystemPackets.h"
-#include "TalentPackets.h"
-#include "TotemPackets.h"
-#include "WorldStatePackets.h"
+#include "Packet.h"
 
-#endif // AllPackets_h__
+namespace WorldPackets
+{
+    namespace Custom
+    {
+        class CustomCombatRating final : public ServerPacket
+        {
+        public:
+            CustomCombatRating() : ServerPacket(SMSG_UPDATE_CUSTOM_COMBAT_RATING, 1 + 4) { }
+
+            WorldPacket const* Write() override;
+
+            int8 ratingID = 0;
+            int32 ratingAmount = 0;
+        };
+    }
+}
+
+#endif // CustomPackets_h__

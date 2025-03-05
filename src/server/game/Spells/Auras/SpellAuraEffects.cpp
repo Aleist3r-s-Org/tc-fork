@@ -4062,7 +4062,7 @@ void AuraEffect::HandleModRating(AuraApplication const* aurApp, uint8 mode, bool
     if (target->GetTypeId() != TYPEID_PLAYER)
         return;
 
-    for (uint32 rating = 0; rating < MAX_COMBAT_RATING; ++rating)
+    for (uint32 rating = 0; rating < MAX_CUSTOM_RATING; ++rating)
         if (GetMiscValue() & (1 << rating))
             target->ToPlayer()->ApplyRatingMod(CombatRating(rating), GetAmount(), apply);
 }
@@ -4078,7 +4078,7 @@ void AuraEffect::HandleModRatingFromStat(AuraApplication const* aurApp, uint8 mo
         return;
 
     // Just recalculate ratings
-    for (uint32 rating = 0; rating < MAX_COMBAT_RATING; ++rating)
+    for (uint32 rating = 0; rating < MAX_CUSTOM_RATING; ++rating)
         if (GetMiscValue() & (1 << rating))
             target->ToPlayer()->ApplyRatingMod(CombatRating(rating), 0, apply);
 }
