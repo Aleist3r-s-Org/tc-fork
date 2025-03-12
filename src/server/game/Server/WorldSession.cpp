@@ -1664,6 +1664,8 @@ uint32 WorldSession::DosProtection::GetMaxPacketCounterAllowed(uint16 opcode) co
         case CMSG_SOCKET_GEMS:                          // not profiled
         case CMSG_WRAP_ITEM:                            // not profiled
         case CMSG_REPORT_PVP_AFK:                       // not profiled
+        // custom
+        case CMSG_TELEPORT_GRAVEYARD_REQUEST:           // Aleist3r: not profiled, just not letting them to spam it lol
         {
             maxPacketCounterAllowed = 10;
             break;

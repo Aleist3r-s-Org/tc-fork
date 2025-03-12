@@ -1189,6 +1189,7 @@ class TC_GAME_API WorldSession
         void HandleEnterPlayerVehicle(WorldPacket& data);
         void HandleUpdateProjectilePosition(WorldPacket& recvPacket);
         void HandleUpdateMissileTrajectory(WorldPacket& recvPacket);
+        void HandleTeleportToGeaveyardOpcode(WorldPacket& recvPacket);
 
     public:
         QueryCallbackProcessor& GetQueryProcessor() { return _queryProcessor; }
