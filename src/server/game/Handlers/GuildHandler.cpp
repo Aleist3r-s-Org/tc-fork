@@ -127,15 +127,6 @@ void WorldSession::HandleGuildDelete(WorldPackets::Guild::GuildDelete& /*packet*
         guild->HandleDisband(this);
 }
 
-void WorldSession::HandleGuildSetGuildMaster(WorldPackets::Guild::GuildSetGuildMaster& packet)
-{
-    TC_LOG_DEBUG("guild", "CMSG_GUILD_LEADER [{}]: Target: {}", GetPlayerInfo(), packet.NewMasterName);
-
-    if (normalizePlayerName(packet.NewMasterName))
-        if (Guild* guild = GetPlayer()->GetGuild())
-            guild->HandleSetLeader(this, packet.NewMasterName);
-}
-
 void WorldSession::HandleGuildUpdateMotdText(WorldPackets::Guild::GuildUpdateMotdText& packet)
 {
     TC_LOG_DEBUG("guild", "CMSG_GUILD_MOTD [{}]: MOTD: {}", GetPlayerInfo(), packet.MotdText);
@@ -151,7 +142,7 @@ void WorldSession::HandleGuildSetPublicNoteOpcode(WorldPackets::Guild::GuildSetM
 
     if (normalizePlayerName(packet.NoteeName))
         if (Guild* guild = GetPlayer()->GetGuild())
-            guild->HandleSetMemberNote(this, packet.Note, packet.NoteeName, false);
+            guild->HandleSetMemberNote(this, packet.Note, packet.NoteeName, true);
 }
 
 void WorldSession::HandleGuildSetOfficerNoteOpcode(WorldPackets::Guild::GuildSetMemberNote& packet)
@@ -161,7 +152,7 @@ void WorldSession::HandleGuildSetOfficerNoteOpcode(WorldPackets::Guild::GuildSet
 
     if (normalizePlayerName(packet.NoteeName))
         if (Guild* guild = GetPlayer()->GetGuild())
-            guild->HandleSetMemberNote(this, packet.Note, packet.NoteeName, true);
+            guild->HandleSetMemberNote(this, packet.Note, packet.NoteeName, false);
 }
 
 void WorldSession::HandleGuildSetRankPermissions(WorldPackets::Guild::GuildSetRankPermissions& packet)
@@ -380,4 +371,13 @@ void WorldSession::HandleGuildBankSetTabText(WorldPackets::Guild::GuildBankSetTa
 
     if (Guild* guild = GetPlayer()->GetGuild())
         guild->SetBankTabText(packet.Tab, packet.TabText);
+}
+
+void WorldSession::HandleGuildSetGuildMaster(WorldPackets::Guild::GuildSetGuildMaster& packet)
+{
+    TC_LOG_DEBUG("guild", "CMSG_GUILD_LEADER [{}]: Target: {}", GetPlayerInfo(), packet.NewMasterName);
+
+    if (normalizePlayerName(packet.NewMasterName))
+        if (Guild* guild = GetPlayer()->GetGuild())
+            guild->HandleSetNewGuildMaster(this, packet.NewMasterName);
 }

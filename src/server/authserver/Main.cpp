@@ -63,9 +63,10 @@ namespace fs = boost::filesystem;
 
 #if TRINITY_PLATFORM == TRINITY_PLATFORM_WINDOWS
 #include "ServiceWin32.h"
-char serviceName[] = "authserver";
-char serviceLongName[] = "TrinityCore auth service";
-char serviceDescription[] = "TrinityCore World of Warcraft emulator auth service";
+#include <tchar.h>
+TCHAR serviceName[] = _T("authserver");
+TCHAR serviceLongName[] = _T("TrinityCore auth service");
+TCHAR serviceDescription[] = _T("TrinityCore World of Warcraft emulator auth service");
 /*
 * -1 - not in service mode
 *  0 - stopped
@@ -102,12 +103,13 @@ int main(int argc, char** argv)
         return 0;
 
 #if TRINITY_PLATFORM == TRINITY_PLATFORM_WINDOWS
+    Trinity::Service::Init(serviceLongName, serviceName, serviceDescription, &main, &m_ServiceStatus);
     if (winServiceAction == "install")
-        return WinServiceInstall() == true ? 0 : 1;
+        return Trinity::Service::Install();
     if (winServiceAction == "uninstall")
-        return WinServiceUninstall() == true ? 0 : 1;
+        return Trinity::Service::Uninstall();
     if (winServiceAction == "run")
-        return WinServiceRun() ? 0 : 1;
+        return Trinity::Service::Run();
 #endif
 
     std::string configError;
@@ -191,12 +193,6 @@ int main(int argc, char** argv)
     sRealmList->Initialize(*ioContext, sConfigMgr->GetIntDefault("RealmsStateUpdateDelay", 20));
 
     std::shared_ptr<void> sRealmListHandle(nullptr, [](void*) { sRealmList->Close(); });
-
-    if (sRealmList->GetRealms().empty())
-    {
-        TC_LOG_ERROR("server.authserver", "No valid realms specified.");
-        return 1;
-    }
 
     // Start the listening port (acceptor) for auth connections
     int32 port = sConfigMgr->GetIntDefault("RealmServerPort", 3724);
@@ -303,7 +299,7 @@ void KeepDatabaseAliveHandler(std::weak_ptr<Trinity::Asio::DeadlineTimer> dbPing
     {
         if (std::shared_ptr<Trinity::Asio::DeadlineTimer> dbPingTimer = dbPingTimerRef.lock())
         {
-            TC_LOG_INFO("server.authserver", "Ping MySQL to keep connection alive");
+            TC_LOG_DEBUG("sql.driver", "Ping MySQL to keep connection alive");
             LoginDatabase.KeepAlive();
 
             dbPingTimer->expires_after(std::chrono::minutes(dbPingInterval));
@@ -384,3 +380,9 @@ variables_map GetConsoleArguments(int argc, char** argv, fs::path& configFile, f
 
     return variablesMap;
 }
+
+#if TRINITY_PLATFORM == TRINITY_PLATFORM_WINDOWS
+#include "WheatyExceptionReport.h"
+// must be at end of file because of init_seg pragma
+INIT_CRASH_HANDLER();
+#endif
