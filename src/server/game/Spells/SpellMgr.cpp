@@ -520,22 +520,6 @@ bool SpellMgr::CanSpellTriggerProcOnEvent(SpellProcEntry const& procEntry, ProcE
     if (eventInfo.GetTypeMask() & (PROC_FLAG_KILLED | PROC_FLAG_KILL | PROC_FLAG_DEATH))
         return true;
 
-    // do triggered cast checks
-    // Do not consider autoattacks as triggered spells
-    if (!(procEntry.AttributesMask & PROC_ATTR_TRIGGERED_CAN_PROC) && !(eventInfo.GetTypeMask() & AUTO_ATTACK_PROC_FLAG_MASK))
-    {
-        if (Spell const* spell = eventInfo.GetProcSpell())
-        {
-            if (spell->IsTriggered())
-            {
-                SpellInfo const* spellInfo = spell->GetSpellInfo();
-                if (!spellInfo->HasAttribute(SPELL_ATTR3_TRIGGERED_CAN_TRIGGER_PROC_2) &&
-                    !spellInfo->HasAttribute(SPELL_ATTR2_TRIGGERED_CAN_TRIGGER_PROC))
-                    return false;
-            }
-        }
-    }
-
     // check school mask (if set) for other trigger types
     if (procEntry.SchoolMask && !(eventInfo.GetSchoolMask() & procEntry.SchoolMask))
         return false;
@@ -3149,7 +3133,6 @@ void SpellMgr::LoadSpellInfoCorrections()
 
     ApplySpellFix({
         63665, // Charge (Argent Tournament emote on riders)
-        31298, // Sleep (needs target selection script)
         51904, // Summon Ghouls On Scarlet Crusade (this should use conditions table, script for this spell needs to be fixed)
         2895,  // Wrath of Air Totem rank 1 (Aura)
         68933, // Wrath of Air Totem rank 2 (Aura)
@@ -3180,16 +3163,12 @@ void SpellMgr::LoadSpellInfoCorrections()
         spellInfo->Priority = 100;
     });
 
-    // Howl of Azgalor
-    ApplySpellFix({ 31344 }, [](SpellInfo* spellInfo)
-    {
-        spellInfo->_GetEffect(EFFECT_0).RadiusEntry = sSpellRadiusStore.LookupEntry(EFFECT_RADIUS_100_YARDS); // 100yards instead of 50000?!
-    });
-
     ApplySpellFix({
         42818, // Headless Horseman - Wisp Flight Port
         42821, // Headless Horseman - Wisp Flight Missile
-        17678  // Despawn Spectral Combatants
+        17678, // Despawn Spectral Combatants
+        720,   // Entangle
+        731    // Entangle
     }, [](SpellInfo* spellInfo)
     {
         spellInfo->RangeEntry = sSpellRangeStore.LookupEntry(6); // 100 yards
@@ -3237,7 +3216,7 @@ void SpellMgr::LoadSpellInfoCorrections()
     {
         // due to discrepancies between ranks
         spellInfo->EquippedItemSubClassMask = 0x0000FC33;
-        spellInfo->AttributesEx3 |= SPELL_ATTR3_CAN_PROC_WITH_TRIGGERED;
+        spellInfo->AttributesEx3 |= SPELL_ATTR3_CAN_PROC_FROM_PROCS;
     });
 
     ApplySpellFix({
@@ -3250,7 +3229,7 @@ void SpellMgr::LoadSpellInfoCorrections()
     }, [](SpellInfo* spellInfo)
     {
         // Entries were not updated after spell effect change, we have to do that manually :/
-        spellInfo->AttributesEx3 |= SPELL_ATTR3_CAN_PROC_WITH_TRIGGERED;
+        spellInfo->AttributesEx3 |= SPELL_ATTR3_CAN_PROC_FROM_PROCS;
     });
 
     ApplySpellFix({
@@ -3312,7 +3291,6 @@ void SpellMgr::LoadSpellInfoCorrections()
         45004, // Wild Magic
         45006, // Wild Magic
         45010, // Wild Magic
-        31347, // Doom
         41635, // Prayer of Mending
         44869, // Spectral Blast
         45027, // Revitalize
@@ -3533,6 +3511,15 @@ void SpellMgr::LoadSpellInfoCorrections()
     }, [](SpellInfo* spellInfo)
     {
         spellInfo->_GetEffect(EFFECT_0).RadiusEntry = sSpellRadiusStore.LookupEntry(EFFECT_RADIUS_150_YARDS); // 150yd
+    });
+
+    // Radius in DBC is not enough
+    ApplySpellFix({
+        36854, // Channel
+        36856  // Channel
+    }, [](SpellInfo* spellInfo)
+    {
+        spellInfo->RangeEntry = sSpellRangeStore.LookupEntry(5); // 40yd
     });
 
     // Master Shapeshifter: missing stance data for forms other than bear - bear version has correct data

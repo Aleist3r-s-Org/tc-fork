@@ -809,8 +809,8 @@ public:
         }
         else
         {
-            // The script uses a script name from database, but isn't assigned to anything.
-            TC_LOG_ERROR("sql.sql", "Script '{}' exists in the core, but the database does not assign it to any creature.",
+            // The script exist in the core, but isn't assigned to anything in the database.
+            TC_LOG_ERROR("sql.sql", "Script '{}' exists in the core, but is not referenced by the database!",
                 script->GetName());
 
             // Avoid calling "delete script;" because we are currently in the script constructor
@@ -1130,7 +1130,6 @@ void ScriptMgr::Unload()
 
 void ScriptMgr::LoadDatabase()
 {
-    sScriptSystemMgr->LoadScriptWaypoints();
     sScriptSystemMgr->LoadScriptSplineChains();
 }
 
@@ -1275,14 +1274,14 @@ void ScriptMgr::OnNetworkStop()
     FOREACH_SCRIPT(ServerScript)->OnNetworkStop();
 }
 
-void ScriptMgr::OnSocketOpen(std::shared_ptr<WorldSocket> socket)
+void ScriptMgr::OnSocketOpen(std::shared_ptr<WorldSocket> const& socket)
 {
     ASSERT(socket);
 
     FOREACH_SCRIPT(ServerScript)->OnSocketOpen(socket);
 }
 
-void ScriptMgr::OnSocketClose(std::shared_ptr<WorldSocket> socket)
+void ScriptMgr::OnSocketClose(std::shared_ptr<WorldSocket> const& socket)
 {
     ASSERT(socket);
 

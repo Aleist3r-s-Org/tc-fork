@@ -350,7 +350,8 @@ void WorldSession::HandleWhoOpcode(WorldPacket& recvData)
 
 void WorldSession::HandleLogoutRequestOpcode(WorldPackets::Character::LogoutRequest& /*logoutRequest*/)
 {
-    if (ObjectGuid lguid = GetPlayer()->GetLootGUID())
+    ObjectGuid lguid = GetPlayer()->GetLootGUID();
+    if (!lguid.IsEmpty())
         DoLootRelease(lguid);
 
     bool instantLogout = (GetPlayer()->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_RESTING) && !GetPlayer()->IsInCombat()) ||
@@ -362,7 +363,7 @@ void WorldSession::HandleLogoutRequestOpcode(WorldPackets::Character::LogoutRequ
     uint32 reason = 0;
     if (GetPlayer()->IsInCombat() && !canLogoutInCombat)
         reason = 1;
-    else if (GetPlayer()->m_movementInfo.HasMovementFlag(MOVEMENTFLAG_FALLING | MOVEMENTFLAG_FALLING_FAR))
+    else if (GetPlayer()->IsFalling())
         reason = 3;                                         // is jumping or falling
     else if (GetPlayer()->duel || GetPlayer()->HasAura(9454)) // is dueling or frozen by GM via freeze command
         reason = 2;                                         // FIXME - Need the correct value
@@ -470,6 +471,30 @@ void WorldSession::HandleSetSelectionOpcode(WorldPacket& recvData)
     recvData >> guid;
 
     _player->SetSelection(guid);
+
+    // Update target of current autoshoot spell
+    if (!guid.IsEmpty())
+    {
+        if (Spell* autoReapeatSpell = _player->GetCurrentSpell(CURRENT_AUTOREPEAT_SPELL))
+        {
+            if (!autoReapeatSpell->GetSpellInfo()->HasAttribute(SPELL_ATTR4_UNK24) // client automatically handles spells with SPELL_ATTR4_AUTO_RANGED_COMBAT
+                && autoReapeatSpell->m_targets.GetUnitTargetGUID() != guid)
+            {
+                Unit* unitTarget = [&]() -> Unit*
+                {
+                    Unit* unit = ObjectAccessor::GetUnit(*_player, guid);
+                    if (unit && _player->IsValidAttackTarget(unit, autoReapeatSpell->GetSpellInfo()))
+                        return unit;
+                    return nullptr;
+                }();
+
+                if (unitTarget)
+                    autoReapeatSpell->m_targets.SetUnitTarget(unitTarget);
+                else
+                    autoReapeatSpell->m_targets.RemoveObjectTarget();
+            }
+        }
+    }
 }
 
 void WorldSession::HandleStandStateChangeOpcode(WorldPacket& recvData)
@@ -648,7 +673,7 @@ void WorldSession::HandleAreaTriggerOpcode(WorldPacket& recvData)
         if (pvp->HandleAreaTrigger(_player, triggerId))
             return;
 
-    AreaTrigger const* at = sObjectMgr->GetAreaTrigger(triggerId);
+    AreaTriggerTeleport const* at = sObjectMgr->GetAreaTrigger(triggerId);
     if (!at)
         return;
 
@@ -821,7 +846,7 @@ void WorldSession::HandleRequestAccountData(WorldPacket& recvData)
     dest.resize(destSize);
 
     WorldPacket data(SMSG_UPDATE_ACCOUNT_DATA, 8+4+4+4+destSize);
-    data << uint64(_player ? _player->GetGUID() : ObjectGuid::Empty);
+    data << (_player ? _player->GetGUID() : ObjectGuid::Empty);
     data << uint32(type);                                   // type (0-7)
     data << uint32(adata->Time);                            // unix time
     data << uint32(size);                                   // decompressed length
@@ -946,7 +971,7 @@ void WorldSession::HandleInspectHonorStatsOpcode(WorldPacket& recvData)
         return;
 
     WorldPacket data(MSG_INSPECT_HONOR_STATS, 8+1+4*4);
-    data << uint64(player->GetGUID());
+    data << player->GetGUID();
     data << uint8(player->GetHonorPoints());
     data << uint32(player->GetUInt32Value(PLAYER_FIELD_KILLS));
     data << uint32(player->GetUInt32Value(PLAYER_FIELD_TODAY_CONTRIBUTION));

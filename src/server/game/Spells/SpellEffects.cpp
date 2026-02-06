@@ -284,8 +284,8 @@ void Spell::EffectInstaKill()
         finish();
 
     WorldPacket data(SMSG_SPELLINSTAKILLLOG, 8+8+4);
-    data << uint64(m_caster->GetGUID());
-    data << uint64(unitTarget->GetGUID());
+    data << m_caster->GetGUID();
+    data << unitTarget->GetGUID();
     data << uint32(m_spellInfo->Id);
     m_caster->SendMessageToSet(&data, true);
 
@@ -332,18 +332,8 @@ void Spell::EffectSchoolDMG()
                 // Meteor like spells (divided damage to targets)
                 if (m_spellInfo->HasAttribute(SPELL_ATTR0_CU_SHARE_DAMAGE))
                 {
-                    uint32 count = 0;
-                    for (auto ihit = m_UniqueTargetInfo.begin(); ihit != m_UniqueTargetInfo.end(); ++ihit)
-                    {
-                        if (ihit->MissCondition != SPELL_MISS_NONE)
-                            continue;
-
-                        if (ihit->EffectMask & (1 << effectInfo->EffectIndex))
-                            ++count;
-                    }
-
                     // divide to all targets
-                    if (count)
+                    if (int64 count = GetUnitTargetCountForEffect(SpellEffIndex(effectInfo->EffectIndex)))
                         damage /= count;
                 }
 
@@ -709,10 +699,6 @@ void Spell::EffectDummy()
             return;
         }
     }
-
-    // normal DB scripted effect
-    TC_LOG_DEBUG("spells", "Spell ScriptStart spellid {} in EffectDummy({})", m_spellInfo->Id, uint32(effectInfo->EffectIndex));
-    m_caster->GetMap()->ScriptsStart(sSpellScripts, uint32(m_spellInfo->Id | (effectInfo->EffectIndex << 24)), m_caster, unitTarget);
 }
 
 void Spell::EffectTriggerSpell()
@@ -1109,7 +1095,7 @@ void Spell::EffectPowerDrain()
         return;
 
     Powers powerType = Powers(effectInfo->MiscValue);
-    if (!unitTarget || !unitTarget->IsAlive() || unitTarget->GetPowerType() != powerType || damage < 0)
+    if (!unitTarget || !unitTarget->IsAlive() || (unitTarget->GetPowerType() != powerType && powerType != POWER_HAPPINESS) || damage < 0)
         return;
 
     Unit* unitCaster = GetUnitCasterForEffectHandlers();
@@ -1586,7 +1572,7 @@ void Spell::EffectPersistentAA()
     }
 
     DynamicObject* dynObj = new DynamicObject(false);
-    if (!dynObj->CreateDynamicObject(unitCaster->GetMap()->GenerateLowGuid<HighGuid::DynamicObject>(), unitCaster, m_spellInfo->Id, *destTarget, radius, DYNAMIC_OBJECT_AREA_SPELL))
+    if (!dynObj->CreateDynamicObject(unitCaster->GetMap()->GenerateLowGuid<HighGuid::DynamicObject>(), unitCaster, m_spellInfo, *destTarget, radius, DYNAMIC_OBJECT_AREA_SPELL))
     {
         delete dynObj;
         return;
@@ -1723,7 +1709,7 @@ void Spell::SendLoot(ObjectGuid guid, LootType loottype)
         if (!gameObjTarget->isSpawned() && !player->IsGameMaster())
         {
             TC_LOG_ERROR("entities.player.cheat", "Possible hacking attempt: Player {} {} tried to loot a gameobject {} which is on respawn timer without being in GM mode!",
-                            player->GetName(), player->GetGUID().ToString(), gameObjTarget->GetGUID().ToString());
+                player->GetName(), player->GetGUID().ToString(), gameObjTarget->GetGUID().ToString());
             return;
         }
         // special case, already has GossipHello inside so return and avoid calling twice
@@ -2111,6 +2097,7 @@ void Spell::EffectSummonType()
                     // Summons a vehicle, but doesn't force anyone to enter it (see SUMMON_CATEGORY_VEHICLE)
                 case SUMMON_TYPE_VEHICLE:
                 case SUMMON_TYPE_VEHICLE2:
+                case SUMMON_TYPE_LIGHTWELL:
                 {
                     if (!unitCaster)
                         return;
@@ -2118,7 +2105,6 @@ void Spell::EffectSummonType()
                     summon = unitCaster->GetMap()->SummonCreature(entry, *destTarget, properties, duration, unitCaster, m_spellInfo->Id);
                     break;
                 }
-                case SUMMON_TYPE_LIGHTWELL:
                 case SUMMON_TYPE_TOTEM:
                 {
                     if (!unitCaster)
@@ -2258,10 +2244,22 @@ void Spell::EffectLearnSpell()
 
     Player* player = unitTarget->ToPlayer();
 
-    uint32 spellToLearn = (m_spellInfo->Id == 483 || m_spellInfo->Id == 55884) ? damage : effectInfo->TriggerSpell;
-    player->LearnSpell(spellToLearn, false);
+    if (m_CastItem && !effectInfo->TriggerSpell)
+    {
+        for (_Spell const& itemEffect : m_CastItem->GetTemplate()->Spells)
+        {
+            if (itemEffect.SpellTrigger != ITEM_SPELLTRIGGER_LEARN_SPELL_ID)
+                continue;
 
-    TC_LOG_DEBUG("spells", "Spell: Player {} has learned spell {} from Npc {}", player->GetGUID().ToString(), spellToLearn, m_caster->GetGUID().ToString());
+            player->LearnSpell(itemEffect.SpellId, false);
+        }
+    }
+
+    if (effectInfo->TriggerSpell)
+    {
+        player->LearnSpell(effectInfo->TriggerSpell, false);
+        TC_LOG_DEBUG("spells", "Spell: Player {} has learned spell {} from Npc {}", player->GetGUID().ToString(), effectInfo->TriggerSpell, m_caster->GetGUID().ToString());
+    }
 }
 
 void Spell::EffectDispel()
@@ -2322,8 +2320,8 @@ void Spell::EffectDispel()
             if (!failCount)
             {
                 // Failed to dispell
-                dataFail << uint64(m_caster->GetGUID());            // Caster GUID
-                dataFail << uint64(unitTarget->GetGUID());          // Victim GUID
+                dataFail << m_caster->GetGUID();                    // Caster GUID
+                dataFail << unitTarget->GetGUID();                  // Victim GUID
                 dataFail << uint32(m_spellInfo->Id);                // dispel spell id
             }
             ++failCount;
@@ -2431,7 +2429,7 @@ void Spell::EffectAddFarsight()
         return;
 
     DynamicObject* dynObj = new DynamicObject(true);
-    if (!dynObj->CreateDynamicObject(player->GetMap()->GenerateLowGuid<HighGuid::DynamicObject>(), player, m_spellInfo->Id, *destTarget, radius, DYNAMIC_OBJECT_FARSIGHT_FOCUS))
+    if (!dynObj->CreateDynamicObject(player->GetMap()->GenerateLowGuid<HighGuid::DynamicObject>(), player, m_spellInfo, *destTarget, radius, DYNAMIC_OBJECT_FARSIGHT_FOCUS))
     {
         delete dynObj;
         return;
@@ -2449,8 +2447,7 @@ void Spell::EffectUntrainTalents()
     if (!unitTarget || m_caster->GetTypeId() == TYPEID_PLAYER)
         return;
 
-    if (ObjectGuid guid = m_caster->GetGUID()) // the trainer is the caster
-        unitTarget->ToPlayer()->SendTalentWipeConfirm(guid);
+    unitTarget->ToPlayer()->SendTalentWipeConfirm(m_caster->GetGUID());
 }
 
 void Spell::EffectTeleUnitsFaceCaster()
@@ -2797,7 +2794,7 @@ void Spell::EffectTameCreature()
         return;
 
     Unit* unitCaster = GetUnitCasterForEffectHandlers();
-    if (!unitCaster || unitCaster->GetPetGUID())
+    if (!unitCaster || !unitCaster->GetPetGUID().IsEmpty())
         return;
 
     if (!unitTarget)
@@ -3571,10 +3568,6 @@ void Spell::EffectScriptEffect()
             break;
         }
     }
-
-    // normal DB scripted effect
-    TC_LOG_DEBUG("spells", "Spell ScriptStart spellid {} in EffectScriptEffect({})", m_spellInfo->Id, uint32(effectInfo->EffectIndex));
-    m_caster->GetMap()->ScriptsStart(sSpellScripts, uint32(m_spellInfo->Id | (effectInfo->EffectIndex << 24)), m_caster, unitTarget);
 }
 
 void Spell::EffectSanctuary()
@@ -3680,8 +3673,8 @@ void Spell::EffectDuel()
 
     // Send request
     WorldPacket data(SMSG_DUEL_REQUESTED, 8 + 8);
-    data << uint64(pGameObj->GetGUID());
-    data << uint64(caster->GetGUID());
+    data << pGameObj->GetGUID();
+    data << caster->GetGUID();
     caster->SendDirectMessage(&data);
     target->SendDirectMessage(&data);
 
@@ -3739,7 +3732,7 @@ void Spell::EffectStuck()
     }
 
     // we have hearthstone not on cooldown, just use it
-    player->CastSpell(player, 8690, TriggerCastFlags(TRIGGERED_FULL_MASK&~TRIGGERED_IGNORE_SPELL_AND_CATEGORY_CD));
+    player->CastSpell(player, 8690, TRIGGERED_FULL_MASK & ~TRIGGERED_IGNORE_SPELL_AND_CATEGORY_CD);
 }
 
 void Spell::EffectSummonPlayer()
@@ -3801,13 +3794,13 @@ void Spell::EffectApplyGlyph()
     }
 
     // apply new one
-    if (uint32 glyph = effectInfo->MiscValue)
+    if (uint32 newGlyph = effectInfo->MiscValue)
     {
-        if (GlyphPropertiesEntry const* gp = sGlyphPropertiesStore.LookupEntry(glyph))
+        if (GlyphPropertiesEntry const* newGlyphProperties = sGlyphPropertiesStore.LookupEntry(newGlyph))
         {
-            if (GlyphSlotEntry const* gs = sGlyphSlotStore.LookupEntry(player->GetGlyphSlot(m_glyphIndex)))
+            if (GlyphSlotEntry const* newGlyphSlot = sGlyphSlotStore.LookupEntry(player->GetGlyphSlot(m_glyphIndex)))
             {
-                if (gp->GlyphSlotFlags != gs->Type)
+                if (newGlyphProperties->GlyphSlotFlags != newGlyphSlot->Type)
                 {
                     SendCastResult(SPELL_FAILED_INVALID_GLYPH);
                     return;                                 // glyph slot mismatch
@@ -3815,17 +3808,17 @@ void Spell::EffectApplyGlyph()
             }
 
             // remove old glyph
-            if (uint32 oldglyph = player->GetGlyph(player->GetActiveSpec(), m_glyphIndex))
+            if (uint32 oldGlyph = player->GetGlyph(player->GetActiveSpec(), m_glyphIndex))
             {
-                if (GlyphPropertiesEntry const* old_gp = sGlyphPropertiesStore.LookupEntry(oldglyph))
+                if (GlyphPropertiesEntry const* oldGlyphProperties = sGlyphPropertiesStore.LookupEntry(oldGlyph))
                 {
-                    player->RemoveAurasDueToSpell(old_gp->SpellID);
+                    player->RemoveAurasDueToSpell(oldGlyphProperties->SpellID);
                     player->SetGlyph(m_glyphIndex, 0);
                 }
             }
 
-            player->CastSpell(player, gp->SpellID, true);
-            player->SetGlyph(m_glyphIndex, glyph);
+            player->CastSpell(player, newGlyphProperties->SpellID, true);
+            player->SetGlyph(m_glyphIndex, newGlyph);
             player->SendTalentsInfoData(false);
         }
     }
@@ -3988,7 +3981,8 @@ void Spell::EffectSummonObject()
     uint32 go_id = effectInfo->MiscValue;
     uint8 slot = effectInfo->Effect - SPELL_EFFECT_SUMMON_OBJECT_SLOT1;
 
-    if (ObjectGuid guid = unitCaster->m_ObjectSlot[slot])
+    ObjectGuid guid = unitCaster->m_ObjectSlot[slot];
+    if (!guid.IsEmpty())
     {
         if (GameObject* obj = unitCaster->GetMap()->GetGameObject(guid))
         {
@@ -4173,7 +4167,7 @@ void Spell::EffectForceDeselect()
 
     // and selection
     data.Initialize(SMSG_CLEAR_TARGET, 8);
-    data << uint64(unitCaster->GetGUID());
+    data << unitCaster->GetGUID();
     Trinity::MessageDistDelivererToHostile notifierClear(unitCaster, &data, dist);
     Cell::VisitWorldObjects(unitCaster, notifierClear, dist);
 
@@ -4720,7 +4714,7 @@ void Spell::EffectTransmitted()
 
     Map* cMap = unitCaster->GetMap();
     // if gameobject is summoning object, it should be spawned right on caster's position
-    if (goinfo->type == GAMEOBJECT_TYPE_SUMMONING_RITUAL)
+    if (goinfo->type == GAMEOBJECT_TYPE_RITUAL)
         unitCaster->GetPosition(fx, fy, fz);
 
     GameObject* pGameObj = new GameObject;
@@ -4755,7 +4749,7 @@ void Spell::EffectTransmitted()
             duration = std::min(duration, duration - lastSec*IN_MILLISECONDS + FISHING_BOBBER_READY_TIME*IN_MILLISECONDS);
             break;
         }
-        case GAMEOBJECT_TYPE_SUMMONING_RITUAL:
+        case GAMEOBJECT_TYPE_RITUAL:
         {
             if (unitCaster->GetTypeId() == TYPEID_PLAYER)
             {
@@ -4976,8 +4970,8 @@ void Spell::EffectStealBeneficialBuff()
             if (!failCount)
             {
                 // Failed to dispell
-                dataFail << uint64(m_caster->GetGUID());            // Caster GUID
-                dataFail << uint64(unitTarget->GetGUID());          // Victim GUID
+                dataFail << m_caster->GetGUID();                    // Caster GUID
+                dataFail << unitTarget->GetGUID();                  // Victim GUID
                 dataFail << uint32(m_spellInfo->Id);                // dispel spell id
             }
             ++failCount;
@@ -5121,13 +5115,18 @@ void Spell::EffectCreateTamedPet()
     if (effectHandleMode != SPELL_EFFECT_HANDLE_HIT_TARGET)
         return;
 
-    if (!unitTarget || unitTarget->GetTypeId() != TYPEID_PLAYER || unitTarget->GetPetGUID() || unitTarget->GetClass() != CLASS_HUNTER)
+    if (!unitTarget || unitTarget->GetTypeId() != TYPEID_PLAYER || !unitTarget->GetPetGUID().IsEmpty() || unitTarget->GetClass() != CLASS_HUNTER)
         return;
 
     uint32 creatureEntry = effectInfo->MiscValue;
     Pet* pet = unitTarget->CreateTamedPetFrom(creatureEntry, m_spellInfo->Id);
     if (!pet)
         return;
+
+    // relocate
+    float px, py, pz;
+    unitTarget->GetClosePoint(px, py, pz, pet->GetCombatReach(), PET_FOLLOW_DIST, pet->GetFollowAngle());
+    pet->Relocate(px, py, pz, unitTarget->GetOrientation());
 
     // add to world
     pet->GetMap()->AddToMap(pet->ToCreature());
@@ -5162,7 +5161,7 @@ void Spell::EffectTitanGrip()
         return;
 
     if (m_caster->GetTypeId() == TYPEID_PLAYER)
-        m_caster->ToPlayer()->SetCanTitanGrip(true, effectInfo->MiscValue);
+        m_caster->ToPlayer()->SetCanTitanGrip(true, effectInfo->MiscValue, m_spellInfo->EquippedItemClass, m_spellInfo->EquippedItemSubClassMask);
 }
 
 void Spell::EffectRedirectThreat()
@@ -5414,8 +5413,9 @@ void Spell::EffectCastButtons()
         if (player->GetPower(POWER_MANA) < cost)
             continue;
 
-        TriggerCastFlags triggerFlags = TriggerCastFlags(TRIGGERED_IGNORE_GCD | TRIGGERED_IGNORE_CAST_IN_PROGRESS | TRIGGERED_CAST_DIRECTLY);
-        player->CastSpell(player, spell_id, triggerFlags);
+        CastSpellExtraArgs args;
+        args.TriggerFlags = TRIGGERED_IGNORE_GCD | TRIGGERED_IGNORE_CAST_IN_PROGRESS | TRIGGERED_CAST_DIRECTLY;
+        m_caster->CastSpell(m_caster, spellInfo->Id, args);
     }
 }
 

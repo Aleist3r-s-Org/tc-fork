@@ -245,8 +245,8 @@ void WorldSession::HandleSendMail(WorldPackets::Mail::SendMail& sendMail)
                 {
                     if (log)
                     {
-                        sLog->OutCommand(GetAccountId(), "GM {} (GUID: {}) (Account: {}) mail item: {} (Entry: {} Count: {}) "
-                            "to: {} ({}) (Account: {})", GetPlayerName(), GetGUIDLow(), GetAccountId(),
+                        sLog->OutCommand(GetAccountId(), "GM {} ({}) (Account: {}) mail item: {} (Entry: {} Count: {}) "
+                            "to: {} ({}) (Account: {})", GetPlayerName(), _player->GetGUID().ToString(), GetAccountId(),
                             item->GetTemplate()->Name1, item->GetEntry(), item->GetCount(),
                             mailInfo.Target, receiverGuid.ToString(), receiverAccountId);
                     }
@@ -268,8 +268,8 @@ void WorldSession::HandleSendMail(WorldPackets::Mail::SendMail& sendMail)
 
             if (log && mailInfo.SendMoney > 0)
             {
-                sLog->OutCommand(GetAccountId(), "GM {} (GUID: {}) (Account: {}) mail money: {} to: {} ({}) (Account: {})",
-                    GetPlayerName(), GetGUIDLow(), GetAccountId(), mailInfo.SendMoney, mailInfo.Target, receiverGuid.ToString(), receiverAccountId);
+                sLog->OutCommand(GetAccountId(), "GM {} ({}) (Account: {}) mail money: {} to: {} ({}) (Account: {})",
+                    GetPlayerName(), _player->GetGUID().ToString(), GetAccountId(), mailInfo.SendMoney, mailInfo.Target, receiverGuid.ToString(), receiverAccountId);
             }
         }
 
@@ -361,8 +361,7 @@ void WorldSession::HandleMailReturnToSender(WorldPackets::Mail::MailReturnToSend
         player->SendMailResult(returnToSender.MailID, MAIL_RETURNED_TO_SENDER, MAIL_ERR_INTERNAL_ERROR);
         return;
     }
-    //we can return mail now
-    //so firstly delete the old one
+    //we can return mail now, so firstly delete the old one
     CharacterDatabaseTransaction trans = CharacterDatabase.BeginTransaction();
 
     CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_MAIL_BY_ID);
@@ -386,14 +385,8 @@ void WorldSession::HandleMailReturnToSender(WorldPackets::Mail::MailReturnToSend
         {
             for (MailItemInfoVec::iterator itr2 = m->items.begin(); itr2 != m->items.end(); ++itr2)
             {
-                Item* item = player->GetMItem(itr2->item_guid);
-                if (item)
+                if (Item* item = player->GetMItem(itr2->item_guid))
                     draft.AddItem(item);
-                else
-                {
-                    //WTF?
-                }
-
                 player->RemoveMItem(itr2->item_guid);
             }
         }
@@ -447,7 +440,7 @@ void WorldSession::HandleMailTakeItem(WorldPackets::Mail::MailTakeItem& takeItem
 
         if (m->COD > 0)                                     //if there is COD, take COD money from player and send them to sender by mail
         {
-            ObjectGuid sender_guid(HighGuid::Player, m->sender);
+            ObjectGuid sender_guid = ObjectGuid::Create<HighGuid::Player>(m->sender);
             Player* receiver = ObjectAccessor::FindConnectedPlayer(sender_guid);
 
             uint32 sender_accId = 0;
@@ -595,7 +588,7 @@ void WorldSession::HandleMailCreateTextItem(WorldPackets::Mail::MailCreateTextIt
         bodyItem->SetText(m->body);
 
     if (m->messageType == MAIL_NORMAL)
-        bodyItem->SetGuidValue(ITEM_FIELD_CREATOR, ObjectGuid(HighGuid::Player, m->sender));
+        bodyItem->SetGuidValue(ITEM_FIELD_CREATOR, ObjectGuid::Create<HighGuid::Player>(m->sender));
 
     bodyItem->SetFlag(ITEM_FIELD_FLAGS, ITEM_FLAG_MAIL_TEXT_MASK);
 
@@ -628,7 +621,7 @@ void WorldSession::HandleQueryNextMailTime(WorldPackets::Mail::MailQueryNextMail
         result.NextMailTime = 0.0f;
 
         time_t now = GameTime::GetGameTime();
-        std::set<uint32> sentSenders;
+        std::set<ObjectGuid::LowType> sentSenders;
         for (Mail* m : _player->GetMails())
         {
             // must be not checked yet
