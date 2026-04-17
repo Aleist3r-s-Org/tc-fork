@@ -18,18 +18,22 @@
 #ifndef AllPackets_h__
 #define AllPackets_h__
 
+#include "AuthenticationPackets.h"
 #include "BankPackets.h"
 #include "BattlegroundPackets.h"
 #include "CalendarPackets.h"
 #include "CharacterPackets.h"
 #include "ChatPackets.h"
+#include "ClientConfigPackets.h"
 #include "CombatLogPackets.h"
 #include "CombatPackets.h"
 #include "CustomPackets.h"
 #include "GuildPackets.h"
+#include "InspectPackets.h"
 #include "LFGPackets.h"
 #include "MailPackets.h"
 #include "MiscPackets.h"
+#include "MovementPackets.h"
 #include "NPCPackets.h"
 #include "PartyPackets.h"
 #include "PetPackets.h"
@@ -39,6 +43,7 @@
 #include "SystemPackets.h"
 #include "TalentPackets.h"
 #include "TotemPackets.h"
+#include "TradePackets.h"
 #include "WorldStatePackets.h"
 
 #endif // AllPackets_h__
