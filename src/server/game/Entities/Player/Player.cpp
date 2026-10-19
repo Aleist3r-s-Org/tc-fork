@@ -271,7 +271,7 @@ Player::Player(WorldSession* session): Unit(true)
         m_auraBasePctMod[i] = 1.0f;
     }
 
-    for (uint8 i = 0; i < MAX_COMBAT_RATING; i++)
+    for (uint8 i = 0; i < MAX_CUSTOM_RATING; i++)
         m_baseRatingValue[i] = 0;
 
     m_baseSpellPower = 0;
@@ -5217,7 +5217,7 @@ float Player::GetRatingMultiplier(CombatRating cr) const
 
 float Player::GetRatingBonusValue(CombatRating cr) const
 {
-    return float(GetUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + AsUnderlyingType(cr))) * GetRatingMultiplier(cr);
+    return float(/*GetUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + AsUnderlyingType(cr))*/m_baseRatingValue[AsUnderlyingType(cr)]) * GetRatingMultiplier(cr);
 }
 
 float Player::GetExpertiseDodgeOrParryReduction(WeaponAttackType attType) const
@@ -5320,7 +5320,14 @@ void Player::UpdateRating(CombatRating cr)
 
     if (amount < 0)
         amount = 0;
-    SetUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + AsUnderlyingType(cr), uint32(amount));
+
+    // Aleist3r: we no longer update original player fields, client stores ratings in custom array now
+    // SetUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + AsUnderlyingType(cr), uint32(amount));
+    int8 rating = static_cast<int8>(cr);
+    WorldPacket data(SMSG_UPDATE_COMBAT_RATING, 1 + 4);
+    data << rating;
+    data << amount;
+    SendDirectMessage(&data);
 
     bool affectStats = CanModifyStats();
 
@@ -5389,15 +5396,15 @@ void Player::UpdateRating(CombatRating cr)
             }
             break;
         case CR_ARMOR_PENETRATION:
-            if (affectStats)
-                UpdateArmorPenetration(amount);
+            //if (affectStats)
+            //    UpdateArmorPenetration(amount);
             break;
     }
 }
 
 void Player::UpdateAllRatings()
 {
-    for (uint8 cr = 0; cr < MAX_COMBAT_RATING; ++cr)
+    for (uint8 cr = 0; cr < MAX_CUSTOM_RATING; ++cr)
         UpdateRating(CombatRating(cr));
 }
 
@@ -19976,7 +19983,7 @@ void Player::_SaveStats(CharacterDatabaseTransaction trans) const
     stmt->setUInt32(index++, GetUInt32Value(UNIT_FIELD_ATTACK_POWER));
     stmt->setUInt32(index++, GetUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER));
     stmt->setUInt32(index++, GetBaseSpellPowerBonus());
-    stmt->setUInt32(index++, GetUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + AsUnderlyingType(CR_CRIT_TAKEN_SPELL)));
+    stmt->setUInt32(index++, GetUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + AsUnderlyingType(CR_CRIT_TAKEN_SPELL)));//TODO
 
     trans->Append(stmt);
 }

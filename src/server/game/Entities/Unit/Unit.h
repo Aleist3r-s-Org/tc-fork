@@ -344,23 +344,27 @@ enum CombatRating
     CR_CRIT_MELEE               = 8,
     CR_CRIT_RANGED              = 9,
     CR_CRIT_SPELL               = 10,
-    CR_HIT_TAKEN_MELEE          = 11,
-    CR_HIT_TAKEN_RANGED         = 12,
+    CR_HIT_TAKEN_MELEE          = 11,// master branch: Corruption
+    CR_HIT_TAKEN_RANGED         = 12,// master branch: Corruption Resistance
     CR_HIT_TAKEN_SPELL          = 13,
-    CR_CRIT_TAKEN_MELEE         = 14,
-    CR_CRIT_TAKEN_RANGED        = 15,
+    CR_CRIT_TAKEN_MELEE         = 14,// master branch: Resilience Crit Taken
+    CR_CRIT_TAKEN_RANGED        = 15,// master branch: Resilience Player Damage
     CR_CRIT_TAKEN_SPELL         = 16,
     CR_HASTE_MELEE              = 17,
     CR_HASTE_RANGED             = 18,
     CR_HASTE_SPELL              = 19,
-    CR_WEAPON_SKILL_MAINHAND    = 20,
-    CR_WEAPON_SKILL_OFFHAND     = 21,
-    CR_WEAPON_SKILL_RANGED      = 22,
+    CR_WEAPON_SKILL_MAINHAND    = 20,// master branch: Avoidance
+    CR_WEAPON_SKILL_OFFHAND     = 21,// master branch: Sturdiness
+    CR_WEAPON_SKILL_RANGED      = 22,// master branch: Unused 7
     CR_EXPERTISE                = 23,
-    CR_ARMOR_PENETRATION        = 24
+    CR_ARMOR_PENETRATION        = 24,
+    // Aleist3r: until we run out of slots, we don't reuse unused ratings
+    CR_LIFESTEAL                = 25,
+    CR_SPEED                    = 26
 };
 
 #define MAX_COMBAT_RATING         25
+#define MAX_CUSTOM_RATING         32
 
 enum DamageEffectType : uint8
 {

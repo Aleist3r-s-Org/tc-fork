@@ -1237,3 +1237,10 @@ void WorldSession::HandleUpdateMissileTrajectory(WorldPacket& recvPacket)
         HandleMovementOpcode(opcode, movementInfo);
     }
 }
+
+void WorldSession::HandleTeleportToGeaveyardOpcode(WorldPacket& /*recvPacket*/)
+{
+    TC_LOG_DEBUG("network", "WORLD: CMSG_TELEPORT_GRAVEYARD_REQUEST");
+
+    _player->RepopAtGraveyard();
+}
