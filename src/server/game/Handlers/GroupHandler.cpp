@@ -555,7 +555,7 @@ void WorldSession::HandleRaidTargetUpdateOpcode(WorldPacket& recvData)
     }
 }
 
-void WorldSession::HandleGroupRaidConvertOpcode(WorldPacket & /*recvData*/)
+void WorldSession::HandleGroupRaidConvertOpcode(WorldPacket & recvData)
 {
     TC_LOG_DEBUG("network", "WORLD: Received CMSG_CONVERT_RAID");
 
@@ -572,7 +572,15 @@ void WorldSession::HandleGroupRaidConvertOpcode(WorldPacket & /*recvData*/)
 
     // everything's fine, do it (is it 0 (PARTY_OP_INVITE) correct code)
     SendPartyResult(PARTY_OP_INVITE, "", ERR_PARTY_RESULT_OK);
-    group->ConvertToRaid();
+
+    bool toRaid;
+
+    recvData >> toRaid;
+
+    if (toRaid)
+        group->ConvertToRaid();
+    else
+        group->ConvertToParty();
 }
 
 void WorldSession::HandleGroupChangeSubGroupOpcode(WorldPacket& recvData)

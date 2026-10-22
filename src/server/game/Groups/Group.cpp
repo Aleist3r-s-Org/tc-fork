@@ -314,6 +314,44 @@ void Group::ConvertToRaid()
             player->UpdateVisibleGameobjectsOrSpellClicks();
 }
 
+void Group::ConvertToParty()
+{
+    if (m_memberSlots.size() > 5)
+        return;
+
+    m_groupType = GroupType(GROUPTYPE_NORMAL);
+
+    if (m_subGroupsCounts)
+        delete[] m_subGroupsCounts;
+
+    if (!isBGGroup() && !isBFGroup())
+    {
+        CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPD_GROUP_TYPE);
+
+        stmt->setUInt8(0, uint8(m_groupType));
+        stmt->setUInt32(1, m_dbStoreId);
+
+        CharacterDatabase.Execute(stmt);
+    }
+
+    for (auto& memberSlot : m_memberSlots)
+    {
+        CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPD_GROUP_MEMBER_SUBGROUP);
+        memberSlot.group = 0;
+
+        stmt->setUInt8(0, memberSlot.group);
+        stmt->setUInt32(1, memberSlot.guid.GetCounter());
+
+        CharacterDatabase.Execute(stmt);
+    }
+
+    SendUpdate();
+
+    for (member_citerator citr = m_memberSlots.begin(); citr != m_memberSlots.end(); ++citr)
+        if (Player* player = ObjectAccessor::FindPlayer(citr->guid))
+            player->UpdateVisibleGameobjectsOrSpellClicks();
+}
+
 bool Group::AddInvite(Player* player)
 {
     if (!player || player->GetGroupInvite())

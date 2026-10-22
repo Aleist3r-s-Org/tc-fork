@@ -394,7 +394,7 @@ enum AuraType : uint32
     SPELL_AURA_PREVENT_RESURRECTION                         = 314,
     SPELL_AURA_UNDERWATER_WALKING                           = 315,
     SPELL_AURA_PERIODIC_HASTE                               = 316,
-    TOTAL_AURAS                                             = 317
+    TOTAL_AURAS
 };
 
 enum AuraObjectType

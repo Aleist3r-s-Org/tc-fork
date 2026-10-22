@@ -254,6 +254,7 @@ class TC_GAME_API Group
 
         void ConvertToLFG();
         void ConvertToRaid();
+        void ConvertToParty();
 
         void SetBattlegroundGroup(Battleground* bg);
         void SetBattlefieldGroup(Battlefield* bf);
