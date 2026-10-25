@@ -518,6 +518,126 @@ public:
     }
 };
 
+class TC_COMMON_API flag192
+{
+private:
+    uint32 part[6];
+
+public:
+    flag192(uint32 p1 = 0, uint32 p2 = 0, uint32 p3 = 0, uint32 p4 = 0, uint32 p5 = 0, uint32 p6 = 0)
+    {
+        part[0] = p1;
+        part[1] = p2;
+        part[2] = p3;
+        part[3] = p4;
+        part[4] = p5;
+        part[5] = p6;
+    }
+
+    inline bool IsEqual(uint32 p1 = 0, uint32 p2 = 0, uint32 p3 = 0, uint32 p4 = 0, uint32 p5 = 0, uint32 p6 = 0) const
+    {
+        return (part[0] == p1 && part[1] == p2 && part[2] == p3 || part[3] == p4 && part[4] == p5 && part[5] == p6);
+    }
+
+    inline bool HasFlag(uint32 p1 = 0, uint32 p2 = 0, uint32 p3 = 0, uint32 p4 = 0, uint32 p5 = 0, uint32 p6 = 0) const
+    {
+        return (part[0] & p1 || part[1] & p2 || part[2] & p3 || part[3] & p4 || part[4] & p5 || part[5] & p6);
+    }
+
+    inline void Set(uint32 p1 = 0, uint32 p2 = 0, uint32 p3 = 0, uint32 p4 = 0, uint32 p5 = 0, uint32 p6 = 0)
+    {
+        part[0] = p1;
+        part[1] = p2;
+        part[2] = p3;
+        part[3] = p4;
+        part[4] = p5;
+        part[5] = p6;
+    }
+
+    inline bool operator==(flag192 const& right) const
+    {
+        return (part[0] == right.part[0] && part[1] == right.part[1] && part[2] == right.part[2] && part[3] == right.part[3] && part[4] == right.part[4] && part[5] == right.part[5]);
+    }
+
+    inline bool operator!=(flag192 const& right) const
+    {
+        return !(*this == right);
+    }
+
+    inline flag192 operator&(flag192 const& right) const
+    {
+        return flag192(part[0] & right.part[0], part[1] & right.part[1], part[2] & right.part[2], part[3] & right.part[3], part[4] & right.part[4], part[5] & right.part[5]);
+    }
+
+    inline flag192& operator&=(flag192 const& right)
+    {
+        part[0] &= right.part[0];
+        part[1] &= right.part[1];
+        part[2] &= right.part[2];
+        part[3] &= right.part[3];
+        part[4] &= right.part[4];
+        part[5] &= right.part[5];
+        return *this;
+    }
+
+    inline flag192 operator|(flag192 const& right) const
+    {
+        return flag192(part[0] | right.part[0], part[1] | right.part[1], part[2] | right.part[2], part[3] | right.part[3], part[4] | right.part[4], part[5] | right.part[5]);
+    }
+
+    inline flag192& operator |=(flag192 const& right)
+    {
+        part[0] |= right.part[0];
+        part[1] |= right.part[1];
+        part[2] |= right.part[2];
+        part[3] |= right.part[3];
+        part[4] |= right.part[4];
+        part[5] |= right.part[5];
+        return *this;
+    }
+
+    inline flag192 operator~() const
+    {
+        return flag192(~part[0], ~part[1], ~part[2], ~part[3], ~part[4], ~part[5]);
+    }
+
+    inline flag192 operator^(flag192 const& right) const
+    {
+        return flag192(part[0] ^ right.part[0], part[1] ^ right.part[1], part[2] ^ right.part[2], part[3] ^ right.part[3], part[4] ^ right.part[4], part[5] ^ right.part[5]);
+    }
+
+    inline flag192& operator^=(flag192 const& right)
+    {
+        part[0] ^= right.part[0];
+        part[1] ^= right.part[1];
+        part[2] ^= right.part[2];
+        part[3] ^= right.part[3];
+        part[4] ^= right.part[4];
+        part[5] ^= right.part[5];
+        return *this;
+    }
+
+    inline operator bool() const
+    {
+        return (part[0] != 0 || part[1] != 0 || part[2] != 0 || part[3] != 0 || part[4] != 0 || part[5] != 0);
+    }
+
+    inline bool operator !() const
+    {
+        return !(bool(*this));
+    }
+
+    inline uint32& operator[](uint8 el)
+    {
+        return part[el];
+    }
+
+    inline uint32 const& operator [](uint8 el) const
+    {
+        return part[el];
+    }
+};
+
 enum ComparisionType
 {
     COMP_TYPE_EQ = 0,
