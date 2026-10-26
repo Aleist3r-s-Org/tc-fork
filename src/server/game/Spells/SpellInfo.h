@@ -136,37 +136,37 @@ enum SpellSpecificType
     SPELL_SPECIFIC_HAND                          = 28
 };
 
-enum SpellCustomAttributes
-{
-    SPELL_ATTR0_CU_ENCHANT_PROC                  = 0x00000001,
-    SPELL_ATTR0_CU_CONE_BACK                     = 0x00000002,
-    SPELL_ATTR0_CU_CONE_LINE                     = 0x00000004,
-    SPELL_ATTR0_CU_SHARE_DAMAGE                  = 0x00000008,
-    SPELL_ATTR0_CU_NO_INITIAL_THREAT             = 0x00000010,
-    SPELL_ATTR0_CU_AURA_CC                       = 0x00000020,
-    SPELL_ATTR0_CU_DONT_BREAK_STEALTH            = 0x00000040,
-    SPELL_ATTR0_CU_CAN_CRIT                      = 0x00000080,
-    SPELL_ATTR0_CU_DIRECT_DAMAGE                 = 0x00000100,
-    SPELL_ATTR0_CU_CHARGE                        = 0x00000200,
-    SPELL_ATTR0_CU_PICKPOCKET                    = 0x00000400,
-    SPELL_ATTR0_CU_ROLLING_PERIODIC              = 0x00000800,
-    SPELL_ATTR0_CU_NEGATIVE_EFF0                 = 0x00001000,
-    SPELL_ATTR0_CU_NEGATIVE_EFF1                 = 0x00002000,
-    SPELL_ATTR0_CU_NEGATIVE_EFF2                 = 0x00004000,
-    SPELL_ATTR0_CU_IGNORE_ARMOR                  = 0x00008000,
-    SPELL_ATTR0_CU_REQ_TARGET_FACING_CASTER      = 0x00010000,
-    SPELL_ATTR0_CU_REQ_CASTER_BEHIND_TARGET      = 0x00020000,
-    SPELL_ATTR0_CU_ALLOW_INFLIGHT_TARGET         = 0x00040000,
-    SPELL_ATTR0_CU_NEEDS_AMMO_DATA               = 0x00080000,
-    SPELL_ATTR0_CU_BINARY_SPELL                  = 0x00100000,
-    SPELL_ATTR0_CU_SCHOOLMASK_NORMAL_WITH_MAGIC  = 0x00200000,
-    SPELL_ATTR0_CU_DEPRECATED_LIQUID_AURA        = 0x00400000, // DO NOT REUSE
-    SPELL_ATTR0_CU_IS_TALENT                     = 0x00800000, // reserved for master branch
-    SPELL_ATTR0_CU_AURA_CANNOT_BE_SAVED          = 0x01000000,
-    SPELL_ATTR0_CU_CAN_TARGET_ANY_PRIVATE_OBJECT = 0x02000000, // reserved for master branch
-
-    SPELL_ATTR0_CU_NEGATIVE                      = SPELL_ATTR0_CU_NEGATIVE_EFF0 | SPELL_ATTR0_CU_NEGATIVE_EFF1 | SPELL_ATTR0_CU_NEGATIVE_EFF2
-};
+//enum SpellCustomAttributes
+//{
+//    SPELL_ATTR0_CU_ENCHANT_PROC                  = 0x00000001,
+//    SPELL_ATTR0_CU_CONE_BACK                     = 0x00000002,
+//    SPELL_ATTR0_CU_CONE_LINE                     = 0x00000004,
+//    SPELL_ATTR0_CU_SHARE_DAMAGE                  = 0x00000008,
+//    SPELL_ATTR0_CU_NO_INITIAL_THREAT             = 0x00000010,
+//    SPELL_ATTR0_CU_AURA_CC                       = 0x00000020,
+//    SPELL_ATTR0_CU_DONT_BREAK_STEALTH            = 0x00000040,
+//    SPELL_ATTR0_CU_CAN_CRIT                      = 0x00000080,
+//    SPELL_ATTR0_CU_DIRECT_DAMAGE                 = 0x00000100,
+//    SPELL_ATTR0_CU_CHARGE                        = 0x00000200,
+//    SPELL_ATTR0_CU_PICKPOCKET                    = 0x00000400,
+//    SPELL_ATTR0_CU_ROLLING_PERIODIC              = 0x00000800,
+//    SPELL_ATTR0_CU_NEGATIVE_EFF0                 = 0x00001000,
+//    SPELL_ATTR0_CU_NEGATIVE_EFF1                 = 0x00002000,
+//    SPELL_ATTR0_CU_NEGATIVE_EFF2                 = 0x00004000,
+//    SPELL_ATTR0_CU_IGNORE_ARMOR                  = 0x00008000,
+//    SPELL_ATTR0_CU_REQ_TARGET_FACING_CASTER      = 0x00010000,
+//    SPELL_ATTR0_CU_REQ_CASTER_BEHIND_TARGET      = 0x00020000,
+//    SPELL_ATTR0_CU_ALLOW_INFLIGHT_TARGET         = 0x00040000,
+//    SPELL_ATTR0_CU_NEEDS_AMMO_DATA               = 0x00080000,
+//    SPELL_ATTR0_CU_BINARY_SPELL                  = 0x00100000,
+//    SPELL_ATTR0_CU_SCHOOLMASK_NORMAL_WITH_MAGIC  = 0x00200000,
+//    SPELL_ATTR0_CU_DEPRECATED_LIQUID_AURA        = 0x00400000, // DO NOT REUSE
+//    SPELL_ATTR0_CU_IS_TALENT                     = 0x00800000, // reserved for master branch
+//    SPELL_ATTR0_CU_AURA_CANNOT_BE_SAVED          = 0x01000000,
+//    SPELL_ATTR0_CU_CAN_TARGET_ANY_PRIVATE_OBJECT = 0x02000000, // reserved for master branch
+//
+//    SPELL_ATTR0_CU_NEGATIVE                      = SPELL_ATTR0_CU_NEGATIVE_EFF0 | SPELL_ATTR0_CU_NEGATIVE_EFF1 | SPELL_ATTR0_CU_NEGATIVE_EFF2
+//};
 
 uint32 GetTargetFlagMask(SpellTargetObjectTypes objType);
 
@@ -298,7 +298,14 @@ class TC_GAME_API SpellInfo
         uint32 AttributesEx5;
         uint32 AttributesEx6;
         uint32 AttributesEx7;
-        uint32 AttributesCu;
+        uint32 AttributesCu0;
+        uint32 AttributesCu1;
+        uint32 AttributesCu2;
+        uint32 AttributesCu3;
+        uint32 AttributesCu4;
+        uint32 AttributesCu5;
+        uint32 AttributesCu6;
+        uint32 AttributesCu7;
         uint64 Stances;
         uint64 StancesNot;
         uint32 Targets;
@@ -380,7 +387,14 @@ class TC_GAME_API SpellInfo
         inline bool HasAttribute(SpellAttr5 attribute) const { return !!(AttributesEx5 & attribute); }
         inline bool HasAttribute(SpellAttr6 attribute) const { return !!(AttributesEx6 & attribute); }
         inline bool HasAttribute(SpellAttr7 attribute) const { return !!(AttributesEx7 & attribute); }
-        inline bool HasAttribute(SpellCustomAttributes customAttribute) const { return !!(AttributesCu & customAttribute); }
+        inline bool HasAttribute(SpellAttr0Cu customAttribute) const { return !!(AttributesCu0 & customAttribute); }
+        inline bool HasAttribute(SpellAttr1Cu customAttribute) const { return !!(AttributesCu1 & customAttribute); }
+        inline bool HasAttribute(SpellAttr2Cu customAttribute) const { return !!(AttributesCu2 & customAttribute); }
+        inline bool HasAttribute(SpellAttr3Cu customAttribute) const { return !!(AttributesCu3 & customAttribute); }
+        inline bool HasAttribute(SpellAttr4Cu customAttribute) const { return !!(AttributesCu4 & customAttribute); }
+        inline bool HasAttribute(SpellAttr5Cu customAttribute) const { return !!(AttributesCu5 & customAttribute); }
+        inline bool HasAttribute(SpellAttr6Cu customAttribute) const { return !!(AttributesCu6 & customAttribute); }
+        inline bool HasAttribute(SpellAttr7Cu customAttribute) const { return !!(AttributesCu7 & customAttribute); }
 
         bool IsExplicitDiscovery() const;
         bool IsLootCrafting() const;

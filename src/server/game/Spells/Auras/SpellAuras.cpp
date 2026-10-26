@@ -467,7 +467,7 @@ void Aura::_InitEffects(uint8 effMask, Unit* caster, int32 const* baseAmount)
 
 bool Aura::CanPeriodicTickCrit(Unit const* caster) const
 {
-    if (GetSpellInfo()->HasAttribute(SPELL_ATTR2_CANT_CRIT))
+    if (GetSpellInfo()->HasAttribute(SPELL_ATTR2_CANT_CRIT) || GetSpellInfo()->HasAttribute(SPELL_ATTR3_CU_PERIODIC_CANNOT_CRIT))
         return false;
 
     if (caster->HasAuraTypeWithAffectMask(SPELL_AURA_ABILITY_PERIODIC_CRIT, GetSpellInfo()))

@@ -710,6 +710,296 @@ enum SpellAttr7 : uint32
     SPELL_ATTR7_CLIENT_INDICATOR                 = 0x80000000  // TITLE Client indicator (client only)
 };
 
+enum SpellAttr0Cu : uint32
+{
+    SPELL_ATTR0_CU_ENCHANT_PROC                                 = 0x00000001,
+    SPELL_ATTR0_CU_CONE_BACK                                    = 0x00000002,
+    SPELL_ATTR0_CU_CONE_LINE                                    = 0x00000004,
+    SPELL_ATTR0_CU_SHARE_DAMAGE                                 = 0x00000008,
+    SPELL_ATTR0_CU_NO_INITIAL_THREAT                            = 0x00000010,
+    SPELL_ATTR0_CU_AURA_CC                                      = 0x00000020,
+    SPELL_ATTR0_CU_DONT_BREAK_STEALTH                           = 0x00000040,
+    SPELL_ATTR0_CU_CAN_CRIT                                     = 0x00000080,
+    SPELL_ATTR0_CU_DIRECT_DAMAGE                                = 0x00000100,
+    SPELL_ATTR0_CU_CHARGE                                       = 0x00000200,
+    SPELL_ATTR0_CU_PICKPOCKET                                   = 0x00000400,
+    SPELL_ATTR0_CU_ROLLING_PERIODIC                             = 0x00000800,
+    SPELL_ATTR0_CU_NO_ATTACK_BLOCK                              = 0x00001000, // SPELL_ATTRIBUTE_CU0_NEGATIVE_EFF0
+    SPELL_ATTR0_CU_REMOVE_OUTSIDE_DUNGEONS_AND_RAIDS            = 0x00002000, // SPELL_ATTRIBUTE_CU0_NEGATIVE_EFF1
+    SPELL_ATTR0_CU_MIRROR_CREATURE_NAME                         = 0x00004000, // SPELL_ATTRIBUTE_CU0_NEGATIVE_EFF2
+    SPELL_ATTR0_CU_IGNORE_ARMOR                                 = 0x00008000,
+    SPELL_ATTR0_CU_REQ_TARGET_FACING_CASTER                     = 0x00010000,
+    SPELL_ATTR0_CU_REQ_CASTER_BEHIND_TARGET                     = 0x00020000,
+    SPELL_ATTR0_CU_ALLOW_INFLIGHT_TARGET                        = 0x00040000,
+    SPELL_ATTR0_CU_NEEDS_AMMO_DATA                              = 0x00080000,
+    SPELL_ATTR0_CU_BINARY_SPELL                                 = 0x00100000,
+    SPELL_ATTR0_CU_SCHOOLMASK_NORMAL_WITH_MAGIC                 = 0x00200000,
+    SPELL_ATTR0_CU_DEPRECATED_LIQUID_AURA                       = 0x00400000, // DO NOT REUSE
+    SPELL_ATTR0_CU_IS_TALENT                                    = 0x00800000,
+    SPELL_ATTR0_CU_AURA_CANNOT_BE_SAVED                         = 0x01000000,
+    SPELL_ATTR0_CU_AURA_POINTS_ON_CLIENT                        = 0x02000000,
+    SPELL_ATTR0_CU_REQUIRES_LOCATION_TO_BE_ON_LIQUID_SURFACE    = 0x04000000,
+    SPELL_ATTR0_CU_NOT_IN_BATTLEGROUND                          = 0x08000000,
+    SPELL_ATTR0_CU_MISSILE_SPEED_IS_DELAY_IN_SEC                = 0x10000000,
+    SPELL_ATTR0_CU_NOT_IN_ARENA                                 = 0x20000000,
+    SPELL_ATTR0_CU_DO_NOT_DISPLAY_POWER_COST                    = 0x40000000,
+    SPELL_ATTR0_CU_CANNOT_KILL_TARGET                           = 0x80000000
+};
+
+enum SpellAttr1Cu : uint32
+{
+    SPELL_ATTR1_CU_NEGATIVE_EFF0                                = 0x00000001,
+    SPELL_ATTR1_CU_NEGATIVE_EFF1                                = 0x00000002,
+    SPELL_ATTR1_CU_NEGATIVE_EFF2                                = 0x00000004,
+    SPELL_ATTR1_CU_3                                            = 0x00000008,
+    SPELL_ATTR1_CU_4                                            = 0x00000010,
+    SPELL_ATTR1_CU_5                                            = 0x00000020,
+    SPELL_ATTR1_CU_6                                            = 0x00000040,
+    SPELL_ATTR1_CU_7                                            = 0x00000080,
+    SPELL_ATTR1_CU_8                                            = 0x00000100,
+    SPELL_ATTR1_CU_9                                            = 0x00000200,
+    SPELL_ATTR1_CU_10                                           = 0x00000400,
+    SPELL_ATTR1_CU_11                                           = 0x00000800,
+    SPELL_ATTR1_CU_12                                           = 0x00001000,
+    SPELL_ATTR1_CU_13                                           = 0x00002000,
+    SPELL_ATTR1_CU_14                                           = 0x00004000,
+    SPELL_ATTR1_CU_15                                           = 0x00008000,
+    SPELL_ATTR1_CU_16                                           = 0x00010000,
+    SPELL_ATTR1_CU_17                                           = 0x00020000,
+    SPELL_ATTR1_CU_18                                           = 0x00040000,
+    SPELL_ATTR1_CU_19                                           = 0x00080000,
+    SPELL_ATTR1_CU_20                                           = 0x00100000,
+    SPELL_ATTR1_CU_21                                           = 0x00200000,
+    SPELL_ATTR1_CU_22                                           = 0x00400000,
+    SPELL_ATTR1_CU_23                                           = 0x00800000,
+    SPELL_ATTR1_CU_24                                           = 0x01000000,
+    SPELL_ATTR1_CU_25                                           = 0x02000000,
+    SPELL_ATTR1_CU_26                                           = 0x04000000,
+    SPELL_ATTR1_CU_27                                           = 0x08000000,
+    SPELL_ATTR1_CU_28                                           = 0x10000000,
+    SPELL_ATTR1_CU_29                                           = 0x20000000,
+    SPELL_ATTR1_CU_30                                           = 0x40000000,
+    SPELL_ATTR1_CU_31                                           = 0x80000000,
+
+    SPELL_ATTR1_CU_NEGATIVE                                     = 0xFFFFFFFF
+};
+
+enum SpellAttr2Cu : uint32
+{
+    SPELL_ATTR2_CU_RESET_COOLDOWN_ON_ENCOUNTER_END              = 0x00000001,
+    SPELL_ATTR2_CU_CAN_DODGE_PARRY_WHILE_CASTING                = 0x00000002,
+    SPELL_ATTR2_CU_NORMAL_MELEE_ATTACK                          = 0x00000004,
+    SPELL_ATTR2_CU_PREVENT_CLIENT_CAST_CANCEL                   = 0x00000008,
+    SPELL_ATTR2_CU_HIDE_SHAPESHIFT_REQUIREMENTS                 = 0x00000010,
+    SPELL_ATTR2_CU_UNBREAKABLE_CHANNEL                          = 0x00000020,
+    SPELL_ATTR2_CU_NOT_USABLE_IN_INSTANCES                      = 0x00000040,
+    SPELL_ATTR2_CU_NOT_USABLE_IN_CHALLENGE_MODE                 = 0x00000080,
+    SPELL_ATTR2_CU_IGNORE_TARGET_ABSORB_MODIFIERS               = 0x00000100,
+    SPELL_ATTR2_CU_IGNORE_CASTING_DISABLED                      = 0x00000200,
+    SPELL_ATTR2_CU_ONLY_PROC_FROM_CLASS_ABILITIES               = 0x00000400,
+    SPELL_ATTR2_CU_ALLOW_CLASS_ABILITY_PROCS                    = 0x00000800,
+    SPELL_ATTR2_CU_HIDE_SPELL_RANK                              = 0x00001000,
+    SPELL_ATTR2_CU_TREAT_AS_INSTANT                             = 0x00002000, // Changes tooltip cast time line to "Instant"
+    SPELL_ATTR2_CU_LOW_CAST_TIME_TREAT_AS_INSTANT               = 0x00004000, // If cast time <= 250ms, changes tooltip cast time line to "Instant"
+    SPELL_ATTR2_CU_FORCE_HIDE_CASTBAR                           = 0x00008000,
+    SPELL_ATTR2_CU_LOW_CAST_TIME_FORCE_HIDE_CASTBAR             = 0x00010000, // If cast time <= 250ms, does not display cast bar
+    SPELL_ATTR2_CU_LOW_CAST_TIME_DONT_INTERRUPT                 = 0x00020000, // If cast time <= 250ms, does not interrupt cast
+    SPELL_ATTR2_CU_SUPPRESS_LEARN_MSG                           = 0x00040000,
+    SPELL_ATTR2_CU_SUPPRESS_UNLEARN_MSG                         = 0x00080000,
+    SPELL_ATTR2_CU_INVERT_CASTBAR                               = 0x00100000,
+    SPELL_ATTR2_CU_BYPASS_MECHANIC_IMMUNITY                     = 0x00200000,
+    SPELL_ATTR2_CU_REQUIRES_COMBAT                              = 0x00400000,
+    SPELL_ATTR2_CU_USABLE_IN_INSTANCES_ONLY                     = 0x00800000,
+    SPELL_ATTR2_CU_ACTIVATES_REQUIRED_SHAPESHIFT                = 0x01000000,
+    SPELL_ATTR2_CU_REAPPLY_NO_REFRESH_DURATION                  = 0x02000000,
+    SPELL_ATTR2_CU_CAST_TIME_UNAFFECTED_BY_HASTE                = 0x04000000,
+    SPELL_ATTR2_CU_STACKS_DONT_ADD_UP                           = 0x08000000,
+    SPELL_ATTR2_CU_DROP_STACK_ON_EXPIRE                         = 0x10000000,
+    SPELL_ATTR2_CU_COMBO_DAMAGE                                 = 0x20000000, // Combo points affect damage
+    SPELL_ATTR2_CU_COMBO_DURATION                               = 0x40000000, // Combo points affect duration
+    SPELL_ATTR2_CU_USABLE_WHILE_CHARMED                         = 0x80000000
+};
+
+enum SpellAttr3Cu : uint32
+{
+    SPELL_ATTR3_CU_PERIODIC_CANNOT_CRIT                         = 0x00000001, // as all DoTs/HoTs can crit now, inverse of SPELL_ATTR8_PERIODIC_CAN_CRIT
+    SPELL_ATTR3_CU_1                                            = 0x00000002,
+    SPELL_ATTR3_CU_2                                            = 0x00000004,
+    SPELL_ATTR3_CU_3                                            = 0x00000008,
+    SPELL_ATTR3_CU_4                                            = 0x00000010,
+    SPELL_ATTR3_CU_5                                            = 0x00000020,
+    SPELL_ATTR3_CU_6                                            = 0x00000040,
+    SPELL_ATTR3_CU_7                                            = 0x00000080,
+    SPELL_ATTR3_CU_8                                            = 0x00000100,
+    SPELL_ATTR3_CU_9                                            = 0x00000200,
+    SPELL_ATTR3_CU_10                                           = 0x00000400,
+    SPELL_ATTR3_CU_11                                           = 0x00000800,
+    SPELL_ATTR3_CU_12                                           = 0x00001000,
+    SPELL_ATTR3_CU_13                                           = 0x00002000,
+    SPELL_ATTR3_CU_14                                           = 0x00004000,
+    SPELL_ATTR3_CU_15                                           = 0x00008000,
+    SPELL_ATTR3_CU_16                                           = 0x00010000,
+    SPELL_ATTR3_CU_17                                           = 0x00020000,
+    SPELL_ATTR3_CU_18                                           = 0x00040000,
+    SPELL_ATTR3_CU_19                                           = 0x00080000,
+    SPELL_ATTR3_CU_20                                           = 0x00100000,
+    SPELL_ATTR3_CU_21                                           = 0x00200000,
+    SPELL_ATTR3_CU_22                                           = 0x00400000,
+    SPELL_ATTR3_CU_23                                           = 0x00800000,
+    SPELL_ATTR3_CU_24                                           = 0x01000000,
+    SPELL_ATTR3_CU_25                                           = 0x02000000,
+    SPELL_ATTR3_CU_26                                           = 0x04000000,
+    SPELL_ATTR3_CU_27                                           = 0x08000000,
+    SPELL_ATTR3_CU_28                                           = 0x10000000,
+    SPELL_ATTR3_CU_29                                           = 0x20000000,
+    SPELL_ATTR3_CU_30                                           = 0x40000000,
+    SPELL_ATTR3_CU_31                                           = 0x80000000
+};
+
+enum SpellAttr4Cu : uint32
+{
+    SPELL_ATTR4_CU_0                                            = 0x00000001,
+    SPELL_ATTR4_CU_1                                            = 0x00000002,
+    SPELL_ATTR4_CU_2                                            = 0x00000004,
+    SPELL_ATTR4_CU_3                                            = 0x00000008,
+    SPELL_ATTR4_CU_4                                            = 0x00000010,
+    SPELL_ATTR4_CU_5                                            = 0x00000020,
+    SPELL_ATTR4_CU_6                                            = 0x00000040,
+    SPELL_ATTR4_CU_7                                            = 0x00000080,
+    SPELL_ATTR4_CU_8                                            = 0x00000100,
+    SPELL_ATTR4_CU_9                                            = 0x00000200,
+    SPELL_ATTR4_CU_10                                           = 0x00000400,
+    SPELL_ATTR4_CU_11                                           = 0x00000800,
+    SPELL_ATTR4_CU_12                                           = 0x00001000,
+    SPELL_ATTR4_CU_13                                           = 0x00002000,
+    SPELL_ATTR4_CU_14                                           = 0x00004000,
+    SPELL_ATTR4_CU_15                                           = 0x00008000,
+    SPELL_ATTR4_CU_16                                           = 0x00010000,
+    SPELL_ATTR4_CU_17                                           = 0x00020000,
+    SPELL_ATTR4_CU_18                                           = 0x00040000,
+    SPELL_ATTR4_CU_19                                           = 0x00080000,
+    SPELL_ATTR4_CU_20                                           = 0x00100000,
+    SPELL_ATTR4_CU_21                                           = 0x00200000,
+    SPELL_ATTR4_CU_22                                           = 0x00400000,
+    SPELL_ATTR4_CU_23                                           = 0x00800000,
+    SPELL_ATTR4_CU_24                                           = 0x01000000,
+    SPELL_ATTR4_CU_25                                           = 0x02000000,
+    SPELL_ATTR4_CU_26                                           = 0x04000000,
+    SPELL_ATTR4_CU_27                                           = 0x08000000,
+    SPELL_ATTR4_CU_28                                           = 0x10000000,
+    SPELL_ATTR4_CU_29                                           = 0x20000000,
+    SPELL_ATTR4_CU_30                                           = 0x40000000,
+    SPELL_ATTR4_CU_31                                           = 0x80000000
+};
+
+enum SpellAttr5Cu : uint32
+{
+    SPELL_ATTR5_CU_0                                            = 0x00000001,
+    SPELL_ATTR5_CU_1                                            = 0x00000002,
+    SPELL_ATTR5_CU_2                                            = 0x00000004,
+    SPELL_ATTR5_CU_3                                            = 0x00000008,
+    SPELL_ATTR5_CU_4                                            = 0x00000010,
+    SPELL_ATTR5_CU_5                                            = 0x00000020,
+    SPELL_ATTR5_CU_6                                            = 0x00000040,
+    SPELL_ATTR5_CU_7                                            = 0x00000080,
+    SPELL_ATTR5_CU_8                                            = 0x00000100,
+    SPELL_ATTR5_CU_9                                            = 0x00000200,
+    SPELL_ATTR5_CU_10                                           = 0x00000400,
+    SPELL_ATTR5_CU_11                                           = 0x00000800,
+    SPELL_ATTR5_CU_12                                           = 0x00001000,
+    SPELL_ATTR5_CU_13                                           = 0x00002000,
+    SPELL_ATTR5_CU_14                                           = 0x00004000,
+    SPELL_ATTR5_CU_15                                           = 0x00008000,
+    SPELL_ATTR5_CU_16                                           = 0x00010000,
+    SPELL_ATTR5_CU_17                                           = 0x00020000,
+    SPELL_ATTR5_CU_18                                           = 0x00040000,
+    SPELL_ATTR5_CU_19                                           = 0x00080000,
+    SPELL_ATTR5_CU_20                                           = 0x00100000,
+    SPELL_ATTR5_CU_21                                           = 0x00200000,
+    SPELL_ATTR5_CU_22                                           = 0x00400000,
+    SPELL_ATTR5_CU_23                                           = 0x00800000,
+    SPELL_ATTR5_CU_24                                           = 0x01000000,
+    SPELL_ATTR5_CU_25                                           = 0x02000000,
+    SPELL_ATTR5_CU_26                                           = 0x04000000,
+    SPELL_ATTR5_CU_27                                           = 0x08000000,
+    SPELL_ATTR5_CU_28                                           = 0x10000000,
+    SPELL_ATTR5_CU_29                                           = 0x20000000,
+    SPELL_ATTR5_CU_30                                           = 0x40000000,
+    SPELL_ATTR5_CU_31                                           = 0x80000000
+};
+
+enum SpellAttr6Cu : uint32
+{
+    SPELL_ATTR6_CU_0                                            = 0x00000001,
+    SPELL_ATTR6_CU_1                                            = 0x00000002,
+    SPELL_ATTR6_CU_2                                            = 0x00000004,
+    SPELL_ATTR6_CU_3                                            = 0x00000008,
+    SPELL_ATTR6_CU_4                                            = 0x00000010,
+    SPELL_ATTR6_CU_5                                            = 0x00000020,
+    SPELL_ATTR6_CU_6                                            = 0x00000040,
+    SPELL_ATTR6_CU_7                                            = 0x00000080,
+    SPELL_ATTR6_CU_8                                            = 0x00000100,
+    SPELL_ATTR6_CU_9                                            = 0x00000200,
+    SPELL_ATTR6_CU_10                                           = 0x00000400,
+    SPELL_ATTR6_CU_11                                           = 0x00000800,
+    SPELL_ATTR6_CU_12                                           = 0x00001000,
+    SPELL_ATTR6_CU_13                                           = 0x00002000,
+    SPELL_ATTR6_CU_14                                           = 0x00004000,
+    SPELL_ATTR6_CU_15                                           = 0x00008000,
+    SPELL_ATTR6_CU_16                                           = 0x00010000,
+    SPELL_ATTR6_CU_17                                           = 0x00020000,
+    SPELL_ATTR6_CU_18                                           = 0x00040000,
+    SPELL_ATTR6_CU_19                                           = 0x00080000,
+    SPELL_ATTR6_CU_20                                           = 0x00100000,
+    SPELL_ATTR6_CU_21                                           = 0x00200000,
+    SPELL_ATTR6_CU_22                                           = 0x00400000,
+    SPELL_ATTR6_CU_23                                           = 0x00800000,
+    SPELL_ATTR6_CU_24                                           = 0x01000000,
+    SPELL_ATTR6_CU_25                                           = 0x02000000,
+    SPELL_ATTR6_CU_26                                           = 0x04000000,
+    SPELL_ATTR6_CU_27                                           = 0x08000000,
+    SPELL_ATTR6_CU_28                                           = 0x10000000,
+    SPELL_ATTR6_CU_29                                           = 0x20000000,
+    SPELL_ATTR6_CU_30                                           = 0x40000000,
+    SPELL_ATTR6_CU_31                                           = 0x80000000
+};
+
+enum SpellAttr7Cu : uint32
+{
+    SPELL_ATTR7_CU_0                                            = 0x00000001,
+    SPELL_ATTR7_CU_1                                            = 0x00000002,
+    SPELL_ATTR7_CU_2                                            = 0x00000004,
+    SPELL_ATTR7_CU_3                                            = 0x00000008,
+    SPELL_ATTR7_CU_4                                            = 0x00000010,
+    SPELL_ATTR7_CU_5                                            = 0x00000020,
+    SPELL_ATTR7_CU_6                                            = 0x00000040,
+    SPELL_ATTR7_CU_7                                            = 0x00000080,
+    SPELL_ATTR7_CU_8                                            = 0x00000100,
+    SPELL_ATTR7_CU_9                                            = 0x00000200,
+    SPELL_ATTR7_CU_10                                           = 0x00000400,
+    SPELL_ATTR7_CU_11                                           = 0x00000800,
+    SPELL_ATTR7_CU_12                                           = 0x00001000,
+    SPELL_ATTR7_CU_13                                           = 0x00002000,
+    SPELL_ATTR7_CU_14                                           = 0x00004000,
+    SPELL_ATTR7_CU_15                                           = 0x00008000,
+    SPELL_ATTR7_CU_16                                           = 0x00010000,
+    SPELL_ATTR7_CU_17                                           = 0x00020000,
+    SPELL_ATTR7_CU_18                                           = 0x00040000,
+    SPELL_ATTR7_CU_19                                           = 0x00080000,
+    SPELL_ATTR7_CU_20                                           = 0x00100000,
+    SPELL_ATTR7_CU_21                                           = 0x00200000,
+    SPELL_ATTR7_CU_22                                           = 0x00400000,
+    SPELL_ATTR7_CU_23                                           = 0x00800000,
+    SPELL_ATTR7_CU_24                                           = 0x01000000,
+    SPELL_ATTR7_CU_25                                           = 0x02000000,
+    SPELL_ATTR7_CU_26                                           = 0x04000000,
+    SPELL_ATTR7_CU_27                                           = 0x08000000,
+    SPELL_ATTR7_CU_28                                           = 0x10000000,
+    SPELL_ATTR7_CU_29                                           = 0x20000000,
+    SPELL_ATTR7_CU_30                                           = 0x40000000,
+    SPELL_ATTR7_CU_31                                           = 0x80000000
+};
+
 #define MIN_TALENT_GROUP         0
 #define MAX_TALENT_GROUP         1
 #define MIN_TALENT_GROUPS        1

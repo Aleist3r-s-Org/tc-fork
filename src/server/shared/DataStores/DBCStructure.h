@@ -1502,6 +1502,19 @@ struct SpellEntry
 typedef std::set<uint32> PetFamilySpellsSet;
 typedef std::map<uint32, PetFamilySpellsSet> PetFamilySpellsStore;
 
+struct SpellAttributesExtensionEntry
+{
+    uint32 ID;                                                          // 0
+    uint32 AttributesCu0;                                               // 1
+    uint32 AttributesCu1;                                               // 2
+    uint32 AttributesCu2;                                               // 3
+    uint32 AttributesCu3;                                               // 4
+    uint32 AttributesCu4;                                               // 5
+    uint32 AttributesCu5;                                               // 6
+    uint32 AttributesCu6;                                               // 7
+    uint32 AttributesCu7;                                               // 8
+};
+
 struct SpellCastTimesEntry
 {
     uint32 ID;                                              // 0

@@ -802,6 +802,10 @@ std::array<SpellEffectInfo::StaticData, TOTAL_SPELL_EFFECTS> SpellEffectInfo::_d
 
 SpellInfo::SpellInfo(SpellEntry const* spellEntry)
 {
+    // Aleist3r: in theory this should always be valid for dbc entries at least
+    // since Spell.dbc and SpellAttributesExtended.dbc are (or should be) synchronized
+    const SpellAttributesExtensionEntry* attrEntry = sSpellAttributesExtension.LookupEntry(spellEntry->ID);
+
     Id = spellEntry->ID;
     CategoryEntry = spellEntry->Category ? sSpellCategoryStore.LookupEntry(spellEntry->Category) : nullptr;
     Dispel = spellEntry->DispelType;
@@ -814,7 +818,14 @@ SpellInfo::SpellInfo(SpellEntry const* spellEntry)
     AttributesEx5 = spellEntry->AttributesExE;
     AttributesEx6 = spellEntry->AttributesExF;
     AttributesEx7 = spellEntry->AttributesExG;
-    AttributesCu = 0;
+    AttributesCu0 = attrEntry ? attrEntry->AttributesCu0 : 0;
+    AttributesCu1 = attrEntry ? attrEntry->AttributesCu1 : 0;
+    AttributesCu2 = attrEntry ? attrEntry->AttributesCu2 : 0;
+    AttributesCu3 = attrEntry ? attrEntry->AttributesCu3 : 0;
+    AttributesCu4 = attrEntry ? attrEntry->AttributesCu4 : 0;
+    AttributesCu5 = attrEntry ? attrEntry->AttributesCu5 : 0;
+    AttributesCu6 = attrEntry ? attrEntry->AttributesCu6 : 0;
+    AttributesCu7 = attrEntry ? attrEntry->AttributesCu7 : 0;
     Stances = MAKE_PAIR64(spellEntry->ShapeshiftMask[0], spellEntry->ShapeshiftMask[1]);
     StancesNot = MAKE_PAIR64(spellEntry->ShapeshiftExclude[0], spellEntry->ShapeshiftExclude[1]);
     Targets = spellEntry->Targets;
@@ -1222,7 +1233,7 @@ bool SpellInfo::CanBeUsedInCombat() const
 
 bool SpellInfo::IsPositive() const
 {
-    return !HasAttribute(SPELL_ATTR0_CU_NEGATIVE);
+    return !HasAttribute(SPELL_ATTR1_CU_NEGATIVE);
 }
 
 bool SpellInfo::IsPositiveEffect(uint8 effIndex) const
@@ -1231,11 +1242,11 @@ bool SpellInfo::IsPositiveEffect(uint8 effIndex) const
     {
         default:
         case 0:
-            return !HasAttribute(SPELL_ATTR0_CU_NEGATIVE_EFF0);
+            return !HasAttribute(SPELL_ATTR1_CU_NEGATIVE_EFF0);
         case 1:
-            return !HasAttribute(SPELL_ATTR0_CU_NEGATIVE_EFF1);
+            return !HasAttribute(SPELL_ATTR1_CU_NEGATIVE_EFF1);
         case 2:
-            return !HasAttribute(SPELL_ATTR0_CU_NEGATIVE_EFF2);
+            return !HasAttribute(SPELL_ATTR1_CU_NEGATIVE_EFF2);
     }
 }
 
@@ -3944,7 +3955,7 @@ void SpellInfo::_InitializeSpellPositivity()
 
     for (SpellEffectInfo const& effect : GetEffects())
         if (!_isPositiveEffectImpl(this, effect, visited))
-            AttributesCu |= (SPELL_ATTR0_CU_NEGATIVE_EFF0 << effect.EffectIndex);
+            AttributesCu1 |= (SPELL_ATTR1_CU_NEGATIVE_EFF0 << effect.EffectIndex);
 
     // additional checks after effects marked
     for (SpellEffectInfo const& effect : GetEffects())
@@ -3968,7 +3979,7 @@ void SpellInfo::_InitializeSpellPositivity()
                     if (!IsPositiveEffect(j)
                         && effect.TargetA.GetTarget() == GetEffect(SpellEffIndex(j)).TargetA.GetTarget()
                         && effect.TargetB.GetTarget() == GetEffect(SpellEffIndex(j)).TargetB.GetTarget())
-                        AttributesCu |= (SPELL_ATTR0_CU_NEGATIVE_EFF0 << effect.EffectIndex);
+                        AttributesCu1 |= (SPELL_ATTR1_CU_NEGATIVE_EFF0 << effect.EffectIndex);
                 break;
             }
             default:

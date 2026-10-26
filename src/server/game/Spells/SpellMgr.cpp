@@ -2585,6 +2585,7 @@ void SpellMgr::LoadSpellInfoCustomAttributes()
                 continue;
             }
 
+            /*
             if ((attributes & SPELL_ATTR0_CU_NEGATIVE) != 0)
             {
                 for (SpellEffectInfo const& spellEffectInfo : spellInfo->GetEffects())
@@ -2599,8 +2600,9 @@ void SpellMgr::LoadSpellInfoCustomAttributes()
                     }
                 }
             }
+            */
 
-            spellInfo->AttributesCu |= attributes;
+            spellInfo->AttributesCu0 |= attributes;
             ++count;
         } while (result->NextRow());
 
@@ -2616,7 +2618,7 @@ void SpellMgr::LoadSpellInfoCustomAttributes()
         {
             // all bleed effects and spells ignore armor
             if (spellInfo->GetEffectMechanicMask(spellEffectInfo.EffectIndex) & (1 << MECHANIC_BLEED))
-                spellInfo->AttributesCu |= SPELL_ATTR0_CU_IGNORE_ARMOR;
+                spellInfo->AttributesCu0 |= SPELL_ATTR0_CU_IGNORE_ARMOR;
 
             switch (spellEffectInfo.ApplyAuraName)
             {
@@ -2626,7 +2628,7 @@ void SpellMgr::LoadSpellInfoCustomAttributes()
                 case SPELL_AURA_AOE_CHARM:
                 case SPELL_AURA_MOD_FEAR:
                 case SPELL_AURA_MOD_STUN:
-                    spellInfo->AttributesCu |= SPELL_ATTR0_CU_AURA_CC;
+                    spellInfo->AttributesCu0 |= SPELL_ATTR0_CU_AURA_CC;
                     break;
                 default:
                     break;
@@ -2643,7 +2645,7 @@ void SpellMgr::LoadSpellInfoCustomAttributes()
                 case SPELL_AURA_MOD_POSSESS_PET:
                 case SPELL_AURA_MOD_CHARM:
                 case SPELL_AURA_AOE_CHARM:
-                    spellInfo->AttributesCu |= SPELL_ATTR0_CU_AURA_CANNOT_BE_SAVED;
+                    spellInfo->AttributesCu0 |= SPELL_ATTR0_CU_AURA_CANNOT_BE_SAVED;
                     break;
                 default:
                     break;
@@ -2661,7 +2663,7 @@ void SpellMgr::LoadSpellInfoCustomAttributes()
                 case SPELL_EFFECT_HEAL_MECHANICAL:
                 case SPELL_EFFECT_NORMALIZED_WEAPON_DMG:
                 case SPELL_EFFECT_HEAL_PCT:
-                    spellInfo->AttributesCu |= SPELL_ATTR0_CU_CAN_CRIT;
+                    spellInfo->AttributesCu0 |= SPELL_ATTR0_CU_CAN_CRIT;
                     break;
                 default:
                     break;
@@ -2675,7 +2677,7 @@ void SpellMgr::LoadSpellInfoCustomAttributes()
                 case SPELL_EFFECT_NORMALIZED_WEAPON_DMG:
                 case SPELL_EFFECT_WEAPON_PERCENT_DAMAGE:
                 case SPELL_EFFECT_HEAL:
-                    spellInfo->AttributesCu |= SPELL_ATTR0_CU_DIRECT_DAMAGE;
+                    spellInfo->AttributesCu0 |= SPELL_ATTR0_CU_DIRECT_DAMAGE;
                     break;
                 case SPELL_EFFECT_POWER_DRAIN:
                 case SPELL_EFFECT_POWER_BURN:
@@ -2685,17 +2687,17 @@ void SpellMgr::LoadSpellInfoCustomAttributes()
                 case SPELL_EFFECT_ENERGIZE_PCT:
                 case SPELL_EFFECT_ENERGIZE:
                 case SPELL_EFFECT_HEAL_MECHANICAL:
-                    spellInfo->AttributesCu |= SPELL_ATTR0_CU_NO_INITIAL_THREAT;
+                    spellInfo->AttributesCu0 |= SPELL_ATTR0_CU_NO_INITIAL_THREAT;
                     break;
                 case SPELL_EFFECT_CHARGE:
                 case SPELL_EFFECT_CHARGE_DEST:
                 case SPELL_EFFECT_JUMP:
                 case SPELL_EFFECT_JUMP_DEST:
                 case SPELL_EFFECT_LEAP_BACK:
-                    spellInfo->AttributesCu |= SPELL_ATTR0_CU_CHARGE;
+                    spellInfo->AttributesCu0 |= SPELL_ATTR0_CU_CHARGE;
                     break;
                 case SPELL_EFFECT_PICKPOCKET:
-                    spellInfo->AttributesCu |= SPELL_ATTR0_CU_PICKPOCKET;
+                    spellInfo->AttributesCu0 |= SPELL_ATTR0_CU_PICKPOCKET;
                     break;
                 case SPELL_EFFECT_ENCHANT_ITEM:
                 case SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY:
@@ -2725,7 +2727,7 @@ void SpellMgr::LoadSpellInfoCustomAttributes()
                             if (procInfo->HasAura(SPELL_AURA_PROC_TRIGGER_SPELL))
                                 continue;
 
-                            procInfo->AttributesCu |= SPELL_ATTR0_CU_ENCHANT_PROC;
+                            procInfo->AttributesCu0 |= SPELL_ATTR0_CU_ENCHANT_PROC;
                         }
                     }
                     break;
@@ -2800,7 +2802,7 @@ void SpellMgr::LoadSpellInfoCustomAttributes()
 
                     if (setFlag)
                     {
-                        spellInfo->AttributesCu |= SPELL_ATTR0_CU_BINARY_SPELL;
+                        spellInfo->AttributesCu0 |= SPELL_ATTR0_CU_BINARY_SPELL;
                         break;
                     }
                 }
@@ -2811,33 +2813,33 @@ void SpellMgr::LoadSpellInfoCustomAttributes()
         if ((spellInfo->SchoolMask & SPELL_SCHOOL_MASK_NORMAL) && (spellInfo->SchoolMask & SPELL_SCHOOL_MASK_MAGIC))
         {
             spellInfo->SchoolMask &= ~SPELL_SCHOOL_MASK_NORMAL;
-            spellInfo->AttributesCu |= SPELL_ATTR0_CU_SCHOOLMASK_NORMAL_WITH_MAGIC;
+            spellInfo->AttributesCu0 |= SPELL_ATTR0_CU_SCHOOLMASK_NORMAL_WITH_MAGIC;
         }
 
         spellInfo->_InitializeSpellPositivity();
 
         if (GetTalentSpellPos(spellInfo->Id))
-            spellInfo->AttributesCu |= SPELL_ATTR0_CU_IS_TALENT;
+            spellInfo->AttributesCu0 |= SPELL_ATTR0_CU_IS_TALENT;
 
         if (spellInfo->SpellVisual[0] == 3879)
-            spellInfo->AttributesCu |= SPELL_ATTR0_CU_CONE_BACK;
+            spellInfo->AttributesCu0 |= SPELL_ATTR0_CU_CONE_BACK;
 
         switch (spellInfo->SpellFamilyName)
         {
             case SPELLFAMILY_WARRIOR:
                 // Shout / Piercing Howl
                 if (spellInfo->SpellFamilyFlags[0] & 0x20000/* || spellInfo->SpellFamilyFlags[1] & 0x20*/)
-                    spellInfo->AttributesCu |= SPELL_ATTR0_CU_AURA_CC;
+                    spellInfo->AttributesCu0 |= SPELL_ATTR0_CU_AURA_CC;
                 break;
             case SPELLFAMILY_DRUID:
                 // Roar
                 if (spellInfo->SpellFamilyFlags[0] & 0x8)
-                    spellInfo->AttributesCu |= SPELL_ATTR0_CU_AURA_CC;
+                    spellInfo->AttributesCu0 |= SPELL_ATTR0_CU_AURA_CC;
                 break;
             case SPELLFAMILY_GENERIC:
                 // Stoneclaw Totem effect
                 if (spellInfo->Id == 5729)
-                    spellInfo->AttributesCu |= SPELL_ATTR0_CU_AURA_CC;
+                    spellInfo->AttributesCu0 |= SPELL_ATTR0_CU_AURA_CC;
                 break;
             default:
                 break;
@@ -2849,7 +2851,7 @@ void SpellMgr::LoadSpellInfoCustomAttributes()
             if (SpellVisualEntry const* spellVisual = sSpellVisualStore.LookupEntry(spellInfo->SpellVisual[0]))
                 if (spellVisual->HasMissile)
                     if (spellVisual->MissileModel == -4 || spellVisual->MissileModel == -5)
-                        spellInfo->AttributesCu |= SPELL_ATTR0_CU_NEEDS_AMMO_DATA;
+                        spellInfo->AttributesCu0 |= SPELL_ATTR0_CU_NEEDS_AMMO_DATA;
 
     }
 
@@ -2887,7 +2889,7 @@ void SpellMgr::LoadSpellInfoCustomAttributes()
         }
 
         if (overrideAttr && allNonBinary)
-            spellInfo->AttributesCu &= ~SPELL_ATTR0_CU_BINARY_SPELL;
+            spellInfo->AttributesCu0 &= ~SPELL_ATTR0_CU_BINARY_SPELL;
     }
 
     // remove attribute from spells that can't crit
@@ -2897,7 +2899,7 @@ void SpellMgr::LoadSpellInfoCustomAttributes()
             continue;
 
         if (spellInfo->HasAttribute(SPELL_ATTR2_CANT_CRIT))
-            spellInfo->AttributesCu &= ~SPELL_ATTR0_CU_CAN_CRIT;
+            spellInfo->AttributesCu0 &= ~SPELL_ATTR0_CU_CAN_CRIT;
     }
 
     // add custom attribute to liquid auras
@@ -2905,7 +2907,7 @@ void SpellMgr::LoadSpellInfoCustomAttributes()
     {
         if (uint32 spellId = liquid->SpellID)
             if (SpellInfo* spellInfo = _GetSpellInfo(spellId))
-                spellInfo->AttributesCu |= SPELL_ATTR0_CU_AURA_CANNOT_BE_SAVED;
+                spellInfo->AttributesCu0 |= SPELL_ATTR0_CU_AURA_CANNOT_BE_SAVED;
     }
 
     TC_LOG_INFO("server.loading", ">> Loaded SpellInfo custom attributes in {} ms", GetMSTimeDiffToNow(oldMSTime));
