@@ -2456,7 +2456,7 @@ SpellMissInfo Unit::MeleeSpellHitResult(Unit* victim, SpellInfo const* spellInfo
 
     bool canDodge = !spellInfo->HasAttribute(SPELL_ATTR7_CANT_DODGE);
     bool canParry = !spellInfo->HasAttribute(SPELL_ATTR7_CANT_PARRY);
-    bool canBlock = true; // all melee and ranged attacks can be blocked
+    bool canBlock = !spellInfo->HasAttribute(SPELL_ATTR0_CU_NO_ATTACK_BLOCK);
 
     // if victim is casting or cc'd it can't avoid attacks
     if (victim->IsNonMeleeSpellCast(false, false, true) || victim->HasUnitState(UNIT_STATE_CONTROLLED))

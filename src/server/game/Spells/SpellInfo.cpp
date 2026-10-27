@@ -1573,6 +1573,33 @@ SpellCastResult SpellInfo::CheckLocation(uint32 map_id, uint32 zone_id, uint32 a
             return SPELL_FAILED_NOT_IN_RAID_INSTANCE;
     }
 
+    if (HasAttribute(SPELL_ATTR0_CU_NOT_IN_BATTLEGROUND))
+    {
+        MapEntry const* mapEntry = sMapStore.LookupEntry(map_id);
+        if (!mapEntry || mapEntry->IsBattleground())
+            return SPELL_FAILED_NOT_IN_BATTLEGROUND;
+    }
+
+    if (HasAttribute(SPELL_ATTR0_CU_NOT_IN_ARENA))
+    {
+        MapEntry const* mapEntry = sMapStore.LookupEntry(map_id);
+        if (!mapEntry || mapEntry->IsBattleArena())
+            return SPELL_FAILED_NOT_IN_ARENA;
+    }
+
+    if (HasAttribute(SPELL_ATTR2_CU_NOT_USABLE_IN_INSTANCES))
+    {
+        MapEntry const* mapEntry = sMapStore.LookupEntry(map_id);
+        if (!mapEntry || mapEntry->IsNonRaidDungeon())
+            return SPELL_FAILED_NOT_HERE;// TODO: proper error message id
+    }
+
+    // TODO: update when challenge mode is properly implemented
+    if (HasAttribute(SPELL_ATTR2_CU_NOT_USABLE_IN_CHALLENGE_MODE))
+    {
+        return SPELL_FAILED_NOT_HERE;// TODO: proper error message id
+    }
+
     // DB base check (if non empty then must fit at least single for allow)
     SpellAreaMapBounds saBounds = sSpellMgr->GetSpellAreaMapBounds(Id);
     if (saBounds.first != saBounds.second)
